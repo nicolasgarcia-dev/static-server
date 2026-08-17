@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tánger 2027 - Guía de Viaje y Eclipse Solar</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            900: '#78350f',
+                        },
+                        marine: {
+                            500: '#0284c7',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .eclipse-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+        }
+        /* Hide scrollbars for smooth mobile scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-16">
+
+    <!-- Header & Eclipse Banner -->
+    <header class="eclipse-gradient text-white shadow-xl relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20 pointer-events-none">
+            <div class="absolute -right-10 -top-10 w-96 h-96 rounded-full bg-amber-400 blur-3xl"></div>
+            <div class="absolute -left-10 -bottom-10 w-80 h-80 rounded-full bg-blue-600 blur-3xl"></div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 py-6 relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-semibold mb-2 border border-amber-500/30">
+                        <i class="fa-solid fa-moon text-amber-300"></i> Evento Especial: Eclipse Solar Total 2027
+                    </div>
+                    <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight">Tánger 2027: Guía de Viaje</h1>
+                    <p class="text-slate-300 text-xs md:text-base mt-1">
+                        <i class="fa-regular fa-calendar text-amber-400 mr-1"></i> 31 Julio - 3 Agosto 2027 | 
+                        <i class="fa-solid fa-user-group text-amber-400 mx-1"></i> 4 Adultos
+                    </p>
+                </div>
+
+                <!-- Airbnb & Map Quick Links -->
+                <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                    <a href="https://www.airbnb.es/rooms/1744545473211271463?check_in=2027-07-31&check_out=2027-08-03&guests=1&adults=4" 
+                       target="_blank" 
+                       class="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-medium px-3.5 py-2 rounded-xl shadow transition text-xs md:text-sm">
+                        <i class="fa-brands fa-airbnb text-base"></i> Mi Airbnb
+                    </a>
+                    <a href="https://maps.google.com/?q=Tanger+City+Center+Malabata+Tangier" 
+                       target="_blank" 
+                       class="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-marine-800 hover:bg-marine-900 text-white font-medium px-3.5 py-2 rounded-xl shadow transition text-xs md:text-sm border border-marine-500/30">
+                        <i class="fa-solid fa-map-location-dot text-amber-400"></i> Mapa Piso
+                    </a>
+                </div>
+            </div>
+
+            <!-- Countdown Widget -->
+            <div class="mt-4 md:mt-6 bg-white/10 rounded-2xl p-3 md:p-4 border border-white/10 backdrop-blur-md">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 text-xl shrink-0">
+                            <i class="fa-solid fa-sun animate-pulse"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-xs md:text-sm">Eclipse Solar Total en Tánger</h3>
+                            <p class="text-[11px] text-slate-300">Lunes 2 de Agosto de 2027 (~10:50 AM)</p>
+                        </div>
+                    </div>
+                    <div id="countdown" class="flex gap-2 text-center">
+                        <div class="bg-slate-900/80 px-2.5 py-1.5 rounded-lg border border-white/10 min-w-[55px]">
+                            <span id="days" class="block text-base md:text-lg font-extrabold text-amber-400">---</span>
+                            <span class="text-[9px] text-slate-400 uppercase tracking-wider">Días</span>
+                        </div>
+                        <div class="bg-slate-900/80 px-2.5 py-1.5 rounded-lg border border-white/10 min-w-[55px]">
+                            <span id="hours" class="block text-base md:text-lg font-extrabold text-amber-400">--</span>
+                            <span class="text-[9px] text-slate-400 uppercase tracking-wider">Horas</span>
+                        </div>
+                        <div class="bg-slate-900/80 px-2.5 py-1.5 rounded-lg border border-white/10 min-w-[55px]">
+                            <span id="mins" class="block text-base md:text-lg font-extrabold text-amber-400">--</span>
+                            <span class="text-[9px] text-slate-400 uppercase tracking-wider">Min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Compact Navigation Bar (Optimized for Mobile) -->
+    <nav class="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-md">
+        <div class="max-w-6xl mx-auto px-2 flex space-x-1 overflow-x-auto py-1.5 no-scrollbar scroll-smooth">
+            <button onclick="switchTab('tab-summary')" id="btn-tab-summary" class="tab-btn px-3 py-1.5 rounded-lg font-semibold text-xs whitespace-nowrap transition bg-amber-500 text-slate-950 shadow-sm flex items-center gap-1.5 shrink-0">
+                <i class="fa-solid fa-compass"></i> <span>Resumen</span>
+            </button>
+            <button onclick="switchTab('tab-logistics')" id="btn-tab-logistics" class="tab-btn px-3 py-1.5 rounded-lg font-medium text-xs whitespace-nowrap transition text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
+                <i class="fa-solid fa-taxi"></i> <span>Traslados</span>
+            </button>
+            <button onclick="switchTab('tab-itinerary')" id="btn-tab-itinerary" class="tab-btn px-3 py-1.5 rounded-lg font-medium text-xs whitespace-nowrap transition text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
+                <i class="fa-solid fa-route"></i> <span>Ruta 3 Días</span>
+            </button>
+            <button onclick="switchTab('tab-food')" id="btn-tab-food" class="tab-btn px-3 py-1.5 rounded-lg font-medium text-xs whitespace-nowrap transition text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
+                <i class="fa-solid fa-utensils"></i> <span>Comer & Cafés</span>
+            </button>
+            <button onclick="switchTab('tab-tools')" id="btn-tab-tools" class="tab-btn px-3 py-1.5 rounded-lg font-medium text-xs whitespace-nowrap transition text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
+                <i class="fa-solid fa-calculator"></i> <span>Herramientas & Ayuda</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 py-6">
+
+        <!-- TAB 1: SUMMARY -->
+        <section id="tab-summary" class="tab-content space-y-6">
+            <!-- Quick Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-plane-arrival"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-900">Llegada</h4>
+                        <p class="text-sm text-slate-600">Sábado 31 Julio 2027 (~12:00 PM)</p>
+                        <p class="text-xs text-slate-400 mt-1">Aeropuerto TNG &rarr; Malabata (Airbnb)</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-house"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-900">Alojamiento</h4>
+                        <p class="text-sm text-slate-600">Zona Malabata / Playa</p>
+                        <p class="text-xs text-slate-400 mt-1">Cerca de Tanger City Center & Estación</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-wheat-awn-circle-exclamation"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-900">Alimentación</h4>
+                        <p class="text-sm text-slate-600">Española + Sin Gluten</p>
+                        <p class="text-xs text-slate-400 mt-1">Supermercado Carrefour a 3 min walking</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direct Maps Access Box -->
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-6 text-white shadow-lg">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="space-y-2">
+                        <span class="bg-amber-500/20 text-amber-300 text-xs font-semibold px-3 py-1 rounded-full border border-amber-500/30">
+                            Navegación Rápida
+                        </span>
+                        <h3 class="text-2xl font-bold">Llegar al Apartamento en Google Maps</h3>
+                        <p class="text-slate-300 text-sm max-w-xl">
+                            Ubicado en la zona residencial costera de Malabata, junto al paseo marítimo y el centro comercial Tanger City Center.
+                        </p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        <a href="https://www.google.com/maps/dir/Aeropuerto+Internacional+de+T%C3%A1nger-Ibn+Battuta/Tanger+City+Center" 
+                           target="_blank" 
+                           class="inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-3 rounded-xl transition text-sm text-center">
+                            <i class="fa-solid fa-diamond-turn-right"></i> Ruta desde Aeropuerto
+                        </a>
+                        <a href="https://maps.google.com/?cid=12930832958496408832" 
+                           target="_blank" 
+                           class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-5 py-3 rounded-xl transition text-sm border border-white/20 text-center">
+                            <i class="fa-solid fa-location-dot"></i> Ver Punto Exacto
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Essential Travel Tips for 4 People -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb text-amber-500"></i> Claves rápidas para vuestra estancia de 4 personas
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600">
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <strong class="text-slate-800 block mb-1">🚗 Desplazamiento para 4 personas:</strong>
+                        Los *Petit Taxis* (azules) legalmente solo pueden llevar 3 pasajeros. Siendo 4, debéis tomar **2 Petit Taxis** o pedir un **Grand Taxi** (vehículos más grandes estilo monovolumen/mercedes) que os lleva a los 4 juntos.
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <strong class="text-slate-800 block mb-1">🌾 Celíacos en Marruecos:</strong>
+                        Decir *"Bila Gluten"* (sin gluten) o llevar la tarjeta explicativa en francés (*"Sans Gluten - Maladie Coeliaque"*). En el supermercado Carrefour Market de Malabata hay pan, pastas y galletas sin gluten.
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <strong class="text-slate-800 block mb-1">💶 Moneda y Pagos:</strong>
+                        1 € &approx; 10,8 MAD (Dirham Marroquí). En supermercados y restaurantes formales aceptan tarjeta, pero tened efectivo para taxis y comercios locales de la Medina.
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <strong class="text-slate-800 block mb-1">🕶️ Eclipse Solar del 2 de Agosto:</strong>
+                        Llevad gafas de eclipse homologadas (filtro ISO 12312-2) compradas con antelación desde España, ya que allí podrían agotarse rápidamente.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: LOGISTICS & TRANSPORT -->
+        <section id="tab-logistics" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-van-shuttle text-amber-500"></i> Opciones de Traslado desde Aeropuerto (TNG) a Malabata
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-slate-900 text-sm">Grand Taxi (Recomendado)</span>
+                                <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded">Para 4 Pax</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-3">
+                                Están en la parada oficial de la salida de la terminal. Son monovolúmenes (o Mercedes grandes) con capacidad para 4 personas y maletas.
+                            </p>
+                        </div>
+                        <div class="text-xs font-semibold text-slate-700 bg-white p-2 rounded-lg border border-slate-200">
+                            💰 Precio oficial fijo: ~150-200 MAD (15€ - 20€ total)
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-slate-900 text-sm">Alquiler de Coche</span>
+                                <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded">Aeropuerto TNG</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-3">
+                                Oficinas dentro de la terminal (Hertz, Avis, Europcar). Ideal si queréis hacer la excursión a Cabo Espartel y Cuevas de Hércules por vuestra cuenta.
+                            </p>
+                        </div>
+                        <a href="https://www.hertz.es" target="_blank" class="inline-flex items-center justify-center gap-1 text-xs font-bold text-blue-600 bg-blue-50 py-2 rounded-lg border border-blue-200 hover:bg-blue-100">
+                            <i class="fa-solid fa-car"></i> Ver Hertz Aeropuerto
+                        </a>
+                    </div>
+
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-slate-900 text-sm">Traslado Privado</span>
+                                <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded">Reserva Previa</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-3">
+                                Chofer privado con cartel con tu nombre esperándote en llegadas. Se puede solicitar al anfitrión de Airbnb o contratar en WelcomePickups.
+                            </p>
+                        </div>
+                        <div class="text-xs font-semibold text-slate-700 bg-white p-2 rounded-lg border border-slate-200">
+                            💰 Precio aprox: 25€ - 30€ total
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Public transport info -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-bus text-marine-800"></i> Moverse por Tánger siendo 4 personas
+                </h3>
+                <div class="space-y-3 text-xs text-slate-600">
+                    <p class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900">
+                        <strong>⚠️ Regla importante de los Petit Taxis:</strong> En Tánger, los pequeños taxis azules (*Petit Taxis*) tienen prohibido legalmente transportar más de 3 pasajeros. Siendo un grupo de 4, tenéis dos opciones sencillas:
+                        <br>&bull; Tomar <strong>2 Petit Taxis</strong> (suelen costar unos 15-25 MAD / 1,5€ - 2,5€ cada viaje por la ciudad).
+                        <br>&bull; Tomar un <strong>Grand Taxi</strong> en la parada o pedir al restaurante/hotel que os llame a un taxi grande.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: ITINERARY (3 DAYS) WITH MAPS LINKS -->
+        <section id="tab-itinerary" class="tab-content hidden space-y-6">
+            <!-- Day 1 -->
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Día 1</span>
+                        <h3 class="text-base md:text-lg font-bold">Sábado 31 Julio 2027: Llegada, Malabata & Corniche</h3>
+                    </div>
+                    <span class="text-xs bg-white/10 px-3 py-1 rounded-full whitespace-nowrap">Llegada ~12:00 PM</span>
+                </div>
+                <div class="p-5 md:p-6 space-y-5">
+                    <div class="flex gap-3 md:gap-4 items-start">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">12:00 - 13:30</div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap justify-between items-start gap-1">
+                                <h4 class="font-bold text-slate-900 text-sm">Llegada a TNG & Traslado al Apartamento</h4>
+                                <a href="https://maps.google.com/?q=Aeropuerto+Internacional+de+T%C3%A1nger-Ibn+Battuta" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                    <i class="fa-solid fa-map-location-dot"></i> Maps Aeropuerto
+                                </a>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">Llegada al Aeropuerto de Tánger-Ibn Battuta. Recogida de equipaje y traslado en Grand Taxi (o coche de alquiler) hacia Malabata.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 md:gap-4 items-start border-t border-slate-100 pt-4">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">13:30 - 15:30</div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap justify-between items-start gap-1">
+                                <h4 class="font-bold text-slate-900 text-sm">Check-in Airbnb & Comida en El Tangerino</h4>
+                                <div class="flex gap-1.5">
+                                    <a href="https://maps.google.com/?q=Tanger+City+Center+Malabata+Tangier" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-600 hover:underline bg-rose-50 px-2 py-0.5 rounded border border-rose-100">
+                                        <i class="fa-solid fa-house"></i> Maps Airbnb
+                                    </a>
+                                    <a href="https://maps.google.com/?cid=5589320144563308564" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                        <i class="fa-solid fa-utensils"></i> Maps El Tangerino
+                                    </a>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">
+                                Check-in en el piso. Comida en <strong>El Tangerino</strong> (frente al mar), especialistas en mariscos frescos, pescados a la plancha y cocina española.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 md:gap-4 items-start border-t border-slate-100 pt-4">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">16:00 - 17:30</div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap justify-between items-start gap-1">
+                                <h4 class="font-bold text-slate-900 text-sm">Aprovisionamiento en Carrefour Market / Panadería</h4>
+                                <a href="https://maps.google.com/?cid=10322744396165590292" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                    <i class="fa-solid fa-cart-shopping"></i> Maps Carrefour
+                                </a>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">
+                                Compras a 3 min a pie: Agua embotellada, desayunos, frutas, pan recién hecho y productos envasados <em>Sans Gluten</em> para el apartamento.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 md:gap-4 items-start border-t border-slate-100 pt-4">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">18:00 - 21:00</div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap justify-between items-start gap-1">
+                                <h4 class="font-bold text-slate-900 text-sm">Paseo Marítimo & Tanja Marina Bay</h4>
+                                <a href="https://maps.google.com/?q=Tanja+Marina+Bay+Tangier" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                    <i class="fa-solid fa-anchor"></i> Maps Marina
+                                </a>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">Paseo relajado por la Corniche de Tánger hasta la moderna Marina. Tomar un café o té con menta con vistas al puerto.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 md:gap-4 items-start border-t border-slate-100 pt-4">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">21:00 - 23:00</div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap justify-between items-start gap-1">
+                                <h4 class="font-bold text-slate-900 text-sm">Cena Colonial en Casa de España</h4>
+                                <a href="https://maps.google.com/?cid=13294979420928753902" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                    <i class="fa-solid fa-utensils"></i> Maps Casa de España
+                                </a>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">Cena en el centro (Bd Pasteur). Restaurante histórico con excelente carta de tapas, pescados y platos adaptables sin gluten.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 2 -->
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Día 2</span>
+                        <h3 class="text-base md:text-lg font-bold">Domingo 1 Agosto 2027: Medina, Kasbah & Café Hafa</h3>
+                    </div>
+                    <span class="text-xs bg-white/10 px-3 py-1 rounded-full whitespace-nowrap">Cultura & Historia</span>
+                </div>
+                <div class="p-5 md:p-6 space-y-5">
+                    <div class="flex gap-3 md:gap-4 items-start">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">09:30 - 10:30</div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap justify-between items-start gap-1">
+                                <h4 class="font-bold text-slate-900 text-sm">Desayuno en Panadería Boston o Terraza</h4>
+                                <a href="https://maps.google.com/?cid=16522400759355594691" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                    <i class="fa-solid fa-mug-hot"></i> Maps Pâtisserie Boston
+                                </a>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">Desayunar café exprés con cruasanes/pastas recién hechas en la panadería cercana o con las provisiones del piso.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 md:gap-4 items-start border-t border-slate-100 pt-4">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">10:30 - 13:30</div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap justify-between items-start gap-1">
+                                <h4 class="font-bold text-slate-900 text-sm">Grand Socco, Petit Socco & Medina</h4>
+                                <div class="flex gap-1.5">
+                                    <a href="https://maps.google.com/?q=Place+du+9+Avril+1947+Tangier" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                        <i class="fa-solid fa-location-dot"></i> Grand Socco
+                                    </a>
+                                    <a href="https://maps.google.com/?q=Petit+Socco+Tangier" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                        <i class="fa-solid fa-location-dot"></i> Petit Socco
+                                    </a>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">Traslado en taxi hasta la Place du 9 Avril 1947 (Grand Socco). Recorrido por el zoco de las especias, artesanos y zoco central.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 md:gap-4 items-start border-t border-slate-100 pt-4">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">13:30 - 15:30</div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap justify-between items-start gap-1">
+                                <h4 class="font-bold text-slate-900 text-sm">Comida en Saveur du Poisson o Medina</h4>
+                                <a href="https://maps.google.com/?q=Saveur+du+Poisson+Tangier" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                    <i class="fa-solid fa-utensils"></i> Maps Saveur du Poisson
+                                </a>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">Comida en el emblemático Saveur du Poisson (pescado al horno de leña, brochetas de cazón, sopa de marisco) o en terraza de la Medina.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 md:gap-4 items-start border-t border-slate-100 pt-4">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">16:00 - 18:30</div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap justify-between items-start gap-1">
+                                <h4 class="font-bold text-slate-900 text-sm">La Kasbah & Musée de la Kasbah</h4>
+                                <a href="https://maps.google.com/?q=Kasbah+Museum+Tangier" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                    <i class="fa-solid fa-landmark"></i> Maps Kasbah
+                                </a>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">Subida a las murallas de la Kasbah y visita al Palacio del Sultán (Musée de la Kasbah) con mirador sobre el Estrecho.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 md:gap-4 items-start border-t border-slate-100 pt-4">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">19:00 - 21:00</div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap justify-between items-start gap-1">
+                                <h4 class="font-bold text-slate-900 text-sm">Atardecer en Café Hafa</h4>
+                                <a href="https://maps.google.com/?q=Cafe+Hafa+Tangier" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                    <i class="fa-solid fa-mug-hot"></i> Maps Café Hafa
+                                </a>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">Té a la menta en las terrazas escalonadas frente a las costas de España al ponerse el sol.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 3 -->
+            <div class="bg-white rounded-2xl border border-amber-400 overflow-hidden shadow-sm">
+                <div class="bg-gradient-to-r from-amber-600 to-slate-900 text-white p-4 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-300">Día 3 - DÍA CLAVE</span>
+                        <h3 class="text-base md:text-lg font-bold">Lunes 2 Agosto 2027: ECLIPSE SOLAR & Cap Spartel</h3>
+                    </div>
+                    <span class="text-xs bg-amber-500 text-slate-950 font-bold px-3 py-1 rounded-full whitespace-nowrap"><i class="fa-solid fa-sun"></i> Evento Único</span>
+                </div>
+                <div class="p-5 md:p-6 space-y-5">
+                    <div class="flex gap-3 md:gap-4 items-start">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">09:30 - 11:30</div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap justify-between items-start gap-1">
+                                <h4 class="font-bold text-slate-900 text-sm">ECLIPSE SOLAR TOTAL (~10:50 AM)</h4>
+                                <a href="https://maps.google.com/?q=Plage+de+Tanger+Malabata" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 hover:underline bg-amber-100 px-2 py-0.5 rounded border border-amber-200">
+                                    <i class="fa-solid fa-eye"></i> Maps Playa Malabata
+                                </a>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">
+                                Observar la totalidad del eclipse solar desde la terraza del piso en Malabata o desde el paseo marítimo con las gafas homologadas.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 md:gap-4 items-start border-t border-slate-100 pt-4">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">12:30 - 15:00</div>
+                        <div class="flex-1">
+                            <div class="flex flex-wrap justify-between items-start gap-1">
+                                <h4 class="font-bold text-slate-900 text-sm">Excursión a Cap Spartel & Cuevas de Hércules</h4>
+                                <div class="flex gap-1.5">
+                                    <a href="https://maps.google.com/?q=Cap+Spartel+Tangier" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                        <i class="fa-solid fa-lighthouse"></i> Cap Spartel
+                                    </a>
+                                    <a href="https://maps.google.com/?q=Les+Grottes+d%27Hercule+Tangier" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                        <i class="fa-solid fa-mountain font-bold"></i> Cuevas Hércules
+                                    </a>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">
+                                Excursión al punto de unión del Océano Atlántico y el Mar Mediterráneo (Faro de Cabo Espartel) y visita a las místicas Cuevas de Hércules.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 md:gap-4 items-start border-t border-slate-100 pt-4">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">15:00 - 17:00</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-900 text-sm">Comida marinera con vistas al Atlántico</h4>
+                            <p class="text-xs text-slate-600 mt-1">Comida en restaurante costero junto a Cap Spartel (Pescados a la parrilla y marisco fresco).</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 md:gap-4 items-start border-t border-slate-100 pt-4">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">20:30 - 23:00</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-900 text-sm">Cena Especial de Despedida en la Marina</h4>
+                            <p class="text-xs text-slate-600 mt-1">Brindis final y cena cerca del puerto deportivo para poner broche al viaje.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 4 -->
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Día 4</span>
+                        <h3 class="text-base md:text-lg font-bold">Martes 3 Agosto 2027: Check-out & Regreso</h3>
+                    </div>
+                    <span class="text-xs bg-white/10 px-3 py-1 rounded-full whitespace-nowrap">Fin del Viaje</span>
+                </div>
+                <div class="p-5 md:p-6 space-y-4">
+                    <div class="flex gap-3 md:gap-4 items-start">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">09:30 - 11:00</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-900 text-sm">Último Desayuno & Check-out</h4>
+                            <p class="text-xs text-slate-600 mt-1">Desayuno tranquilo en la terraza o cafetería cercana y recogida de equipaje.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 md:gap-4 items-start border-t border-slate-100 pt-4">
+                        <div class="w-20 font-bold text-xs text-amber-600 shrink-0">11:00+</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-900 text-sm">Traslado al Aeropuerto TNG</h4>
+                            <p class="text-xs text-slate-600 mt-1">Grand Taxi o devolución del coche de alquiler en el aeropuerto.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: RESTAURANTS, CAFES & SUPERMARKETS -->
+        <section id="tab-food" class="tab-content hidden space-y-6">
+            <!-- Filter buttons -->
+            <div class="flex flex-wrap gap-1.5 sm:gap-2">
+                <button onclick="filterFood('all')" id="food-btn-all" class="food-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white transition">
+                    Todos
+                </button>
+                <button onclick="filterFood('bakery')" id="food-btn-bakery" class="food-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+                    🥐 Panaderías & Cafés (Tipo Granier)
+                </button>
+                <button onclick="filterFood('spanish')" id="food-btn-spanish" class="food-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+                    🥘 Española & Familiar
+                </button>
+                <button onclick="filterFood('gf')" id="food-btn-gf" class="food-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+                    🌾 Adaptable Sin Gluten
+                </button>
+                <button onclick="filterFood('marroqui')" id="food-btn-marroqui" class="food-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+                    🇲🇦 Tradicional Marroquí
+                </button>
+                <button onclick="filterFood('supermarket')" id="food-btn-supermarket" class="food-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+                    🛒 Supermercados
+                </button>
+            </div>
+
+            <!-- Places Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6" id="food-grid">
+
+                <!-- Boulangerie Pâtisserie Boston -->
+                <div class="food-card bakery bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-amber-100 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-full">Panadería / Desayunos</span>
+                                <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">A 5 min del Airbnb</span>
+                                <h3 class="text-base font-bold text-slate-900 mt-2">Boulangerie Pâtisserie Boston</h3>
+                            </div>
+                            <span class="text-xs text-amber-500 font-bold"><i class="fa-solid fa-star"></i> 3.8</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1.5">Malabata Mall / Av. Mohamed VI</p>
+                        <p class="text-xs text-slate-600 mt-2">
+                            Estilo cafetería-panadería clásica (muy similar al concepto de Granier). Dispone de café exprés, cruasanes recién horneados, napolitanas, hojaldres, tostadas saladas y repostería artesanal. Ideal para desayunar antes de salir de ruta.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs text-slate-500">Abre a las 7:00 AM</span>
+                        <a href="https://maps.google.com/?cid=16522400759355594691" target="_blank" class="text-xs font-bold text-marine-800 hover:underline">
+                            Ver en Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Acapulco Café & Churrería -->
+                <div class="food-card bakery spanish bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-amber-100 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-full">Café & Churrería</span>
+                                <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">Paseo de Malabata</span>
+                                <h3 class="text-base font-bold text-slate-900 mt-2">Acapulco Café & Terrazas</h3>
+                            </div>
+                            <span class="text-xs text-amber-500 font-bold"><i class="fa-solid fa-star"></i> 4.2</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1.5">Av. Mohamed VI (Paseo Marítimo)</p>
+                        <p class="text-xs text-slate-600 mt-2">
+                            Famoso por sus desayunos completos de estilo español y marroquí: churros/porras con chocolate, tostadas con tomate y aceite, café con leche, zumos de naranja recién exprimidos y bollería variado con terraza frente al mar.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs text-slate-500">Desayunos desde 7:30 AM</span>
+                        <a href="https://maps.google.com/?q=Acapulco+Cafe+Tanger+Malabata" target="_blank" class="text-xs font-bold text-marine-800 hover:underline">
+                            Ver en Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Deghfel Signature -->
+                <div class="food-card bakery bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-amber-100 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-full">Pastelería Premium</span>
+                                <h3 class="text-base font-bold text-slate-900 mt-2">Deghfel Signature Pâtisserie</h3>
+                            </div>
+                            <span class="text-xs text-amber-500 font-bold"><i class="fa-solid fa-star"></i> 4.9</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1.5">Av. Youssef Ibn Tachfine (Zona Playa)</p>
+                        <p class="text-xs text-slate-600 mt-2">
+                            Pastelería fina francesa de altísima calidad cerca de la bahía. Tienen cruasanes de mantequilla, brioches, milhojas, tés premium, cafés de especialidad y bocadillos salados perfectos para llevar o merendar.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs text-slate-500">Alta Repostería</span>
+                        <a href="https://maps.google.com/?cid=3620630820754423760" target="_blank" class="text-xs font-bold text-marine-800 hover:underline">
+                            Ver en Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Crumby Bakery -->
+                <div class="food-card bakery bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Café Moderno & Brunch</span>
+                                <h3 class="text-base font-bold text-slate-900 mt-2">Crumby Bakery & Café</h3>
+                            </div>
+                            <span class="text-xs text-amber-500 font-bold"><i class="fa-solid fa-star"></i> 4.8</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1.5">Residence Salem, Rue de Grenade</p>
+                        <p class="text-xs text-slate-600 mt-2">
+                            Cafetería moderna con repostería recién hecha, cookies artesanales, tarta de queso, pancakes y café espresso. Muy agradable para tomar un tentempié en cualquier momento del día.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs text-slate-500">Horario: 8:30 - 23:30</span>
+                        <a href="https://maps.google.com/?cid=10107691046129287070" target="_blank" class="text-xs font-bold text-marine-800 hover:underline">
+                            Ver en Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Casa de España -->
+                <div class="food-card spanish gf bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Cocina Española</span>
+                                <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">Adaptable Sin Gluten</span>
+                                <h3 class="text-base font-bold text-slate-900 mt-2">Casa de España</h3>
+                            </div>
+                            <span class="text-xs text-amber-500 font-bold"><i class="fa-solid fa-star"></i> 4.5</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1.5">47 Bd Pasteur, Tánger (Centro)</p>
+                        <p class="text-xs text-slate-600 mt-2">
+                            Cocina totalmente de estilo español. Paellas, mariscos, carnes y pescados a la plancha. Muy fácil solicitar preparaciones a la plancha o cocidas sin harinas ni salsas de trigo.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs text-slate-500">Tel: +212 808 545 368</span>
+                        <a href="https://maps.google.com/?cid=13294979420928753902" target="_blank" class="text-xs font-bold text-marine-800 hover:underline">
+                            Ver en Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- El Tangerino -->
+                <div class="food-card spanish gf bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Marisquería & Española</span>
+                                <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">Frente al Airbnb</span>
+                                <h3 class="text-base font-bold text-slate-900 mt-2">El Tangerino</h3>
+                            </div>
+                            <span class="text-xs text-amber-500 font-bold"><i class="fa-solid fa-star"></i> 4.1</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1.5">186 Av. Mohamed VI (Paseo de Malabata)</p>
+                        <p class="text-xs text-slate-600 mt-2">
+                            Restaurante clásico en primera línea de playa. Especialidad en mariscos frescos, gambas al ajillo, lenguado y pescados a la plancha. Muy conveniente al estar al lado del apartamento.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs text-slate-500">Tel: +212 539 943 973</span>
+                        <a href="https://maps.google.com/?cid=5589320144563308564" target="_blank" class="text-xs font-bold text-marine-800 hover:underline">
+                            Ver en Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Saveur du Poisson -->
+                <div class="food-card marroqui gf bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-orange-100 text-orange-900 text-[10px] font-bold px-2 py-0.5 rounded-full">Pescado Tradicional</span>
+                                <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">Naturalmente Sin Gluten</span>
+                                <h3 class="text-base font-bold text-slate-900 mt-2">Saveur du Poisson (Populaire)</h3>
+                            </div>
+                            <span class="text-xs text-amber-500 font-bold"><i class="fa-solid fa-star"></i> 4.6</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1.5">2 Escalier Waller (Cerca de Grand Socco)</p>
+                        <p class="text-xs text-slate-600 mt-2">
+                            Restaurante icónico con menú único de pescado fresco del día al horno de leña, brochetas de pescado marinadas con hierbas locales, sopa natural de marisco y zumo artesanal de piña, fresas y miel.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs text-slate-500">Imprescindible en Medina</span>
+                        <a href="https://maps.google.com/?q=Saveur+du+Poisson+Tangier" target="_blank" class="text-xs font-bold text-marine-800 hover:underline">
+                            Ver en Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Café Hafa & Le Salon Bleu -->
+                <div class="food-card marroqui bakery bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-orange-100 text-orange-900 text-[10px] font-bold px-2 py-0.5 rounded-full">Café Tradicional</span>
+                                <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">Vistas Históricas</span>
+                                <h3 class="text-base font-bold text-slate-900 mt-2">Café Hafa / Le Salon Bleu</h3>
+                            </div>
+                            <span class="text-xs text-amber-500 font-bold"><i class="fa-solid fa-star"></i> 4.5</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1.5">Zona Kasbah / Marshan</p>
+                        <p class="text-xs text-slate-600 mt-2">
+                            Lugar legendario con terrazas escalonadas al aire libre sobre el mar. Perfecto para tomar té a la menta, zumos de frutas de temporada y pastas típicas marroquíes observando España al atardecer.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs text-slate-500">Mítico desde 1921</span>
+                        <a href="https://maps.google.com/?q=Cafe+Hafa+Tangier" target="_blank" class="text-xs font-bold text-marine-800 hover:underline">
+                            Ver en Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Carrefour Market Tanger City Center -->
+                <div class="food-card supermarket gf bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Supermercado</span>
+                                <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">Sección Sans Gluten</span>
+                                <h3 class="text-base font-bold text-slate-900 mt-2">Carrefour Market (Tanger City Center)</h3>
+                            </div>
+                            <span class="text-xs text-amber-500 font-bold"><i class="fa-solid fa-star"></i> 3.9</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1.5">Centro Comercial Tanger City Center (3 min a pie)</p>
+                        <p class="text-xs text-slate-600 mt-2">
+                            Ubicado al lado del piso. Pasillo específico con productos etiquetados "Sans Gluten" (panes de molde, tostadas, galletas, pastas), además de agua, lácteos, embutidos y fruta fresca.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs text-slate-500">Horario: 9:00 - 23:00</span>
+                        <a href="https://maps.google.com/?cid=10322744396165590292" target="_blank" class="text-xs font-bold text-marine-800 hover:underline">
+                            Ver en Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Socco Alto - Carrefour Hipermercado -->
+                <div class="food-card supermarket gf bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Hipermercado Grande</span>
+                                <h3 class="text-base font-bold text-slate-900 mt-2">Carrefour Hipermercado Socco Alto</h3>
+                            </div>
+                            <span class="text-xs text-amber-500 font-bold"><i class="fa-solid fa-star"></i> 4.1</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1.5">Centre Commercial Socco Alto, Av. Banafsaj</p>
+                        <p class="text-xs text-slate-600 mt-2">
+                            El hipermercado más grande de la ciudad. Sección dietética ampliada con variedad de productos de la marca Schär (panes, galletas, congelados sin gluten).
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs text-slate-500">Horario: 9:00 - 23:00</span>
+                        <a href="https://maps.google.com/?cid=5666463537306064311" target="_blank" class="text-xs font-bold text-marine-800 hover:underline">
+                            Ver en Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Gluten Free Arabic/French Card -->
+            <div class="bg-emerald-900 text-white p-6 rounded-2xl shadow-sm">
+                <h3 class="text-base font-bold text-emerald-300 mb-2">
+                    <i class="fa-solid fa-utensils text-emerald-400 mr-2"></i> Tarjeta explicativa Sin Gluten (Para restaurantes)
+                </h3>
+                <p class="text-xs text-emerald-100 mb-3">Muestra esta tarjeta digital en pantalla al personal del restaurante si necesitáis asegurar el plato:</p>
+
+                <div class="bg-white text-slate-900 p-4 rounded-xl text-xs space-y-3 font-mono">
+                    <p><strong>En francés:</strong> "Bonjour, j'ai la maladie cœliaque (intolérance stricte au gluten). Je ne peux pas manger de blé, farine, pain, ni sauces contenant de la farine ou sauce soja. Merci de préparer mon plat sans gluten."</p>
+                    <p class="border-t border-slate-200 pt-2"><strong>En árabe / Darija:</strong> "أنا عندي حساسية من الغلوتين (القمح والشعير). مكنقدرش ناكل الخبز ولا الطحين ولا لاصوص فيها الطحين. عافاك وجد ليا الماكلة بلا غلوتين."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: TOOLS, UTILITIES & AIRBNB HELP -->
+        <section id="tab-tools" class="tab-content hidden space-y-6">
+
+            <!-- Airbnb Assistance & Emergency Support Section -->
+            <div class="bg-gradient-to-r from-rose-600 to-rose-800 text-white p-6 rounded-2xl shadow-md border border-rose-500">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                    <div>
+                        <span class="bg-white/20 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            Asistencia Urgente en Viaje
+                        </span>
+                        <h3 class="text-xl font-extrabold mt-1">Soporte y Ayuda 24/7 Airbnb</h3>
+                    </div>
+                    <a href="https://www.airbnb.es/trips" target="_blank" class="bg-white text-rose-700 font-bold px-4 py-2 rounded-xl text-xs hover:bg-slate-100 transition shadow">
+                        <i class="fa-brands fa-airbnb text-rose-600 mr-1"></i> Ir a Mis Viajes en Airbnb
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div class="bg-white/10 p-4 rounded-xl border border-white/20 backdrop-blur-sm space-y-2">
+                        <h4 class="font-bold text-amber-300 text-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-phone"></i> Teléfonos Directos de Soporte Airbnb:
+                        </h4>
+                        <p class="text-white"><strong>España (Español):</strong> <a href="tel:+34911234567" class="underline font-bold text-amber-200">+34 91 123 45 67</a></p>
+                        <p class="text-white"><strong>Internacional (24/7):</strong> <a href="tel:+14158005959" class="underline font-bold text-amber-200">+1-415-800-5959</a></p>
+                    </div>
+
+                    <div class="bg-white/10 p-4 rounded-xl border border-white/20 backdrop-blur-sm space-y-2">
+                        <h4 class="font-bold text-amber-300 text-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-shield-halved"></i> Cobertura AirCover para Huéspedes:
+                        </h4>
+                        <p class="text-slate-200">
+                            Si el apartamento no existe, hay overbooking o no podéis entrar: abre la App de Airbnb &rarr; <strong>Perfil &rarr; Obtener Ayuda &rarr; Reportar en 72h</strong>. Airbnb te realojará o reembolsará de inmediato.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Currency Converter -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-900 text-base mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-coins text-amber-500"></i> Conversor de Moneda (MAD &harr; EUR)
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-4">Tipo de cambio estimado: 1 EUR = 10.8 MAD</p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Euros (€)</label>
+                            <input type="number" id="input-eur" placeholder="Ej: 50" oninput="convertEurToMad()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Dirhams Marroquíes (MAD)</label>
+                            <input type="number" id="input-mad" placeholder="Ej: 540" oninput="convertMadToEur()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Packing Checklist -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-900 text-base mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-blue-500"></i> Checklist del Viaje (4 Personas)
+                    </h3>
+                    <div id="checklist-container" class="space-y-2 text-xs">
+                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-slate-50">
+                            <input type="checkbox" onchange="saveChecklist()" class="rounded text-amber-500 focus:ring-amber-500">
+                            <span>4 Pasaportes en regla (mínimo 6 meses de validez)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-slate-50">
+                            <input type="checkbox" onchange="saveChecklist()" class="rounded text-amber-500 focus:ring-amber-500">
+                            <span>4 Gafas de Eclipse homologadas ISO 12312-2</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-slate-50">
+                            <input type="checkbox" onchange="saveChecklist()" class="rounded text-amber-500 focus:ring-amber-500">
+                            <span>Reserva de Airbnb confirmada e imprimida/guardada offline</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-slate-50">
+                            <input type="checkbox" onchange="saveChecklist()" class="rounded text-amber-500 focus:ring-amber-500">
+                            <span>Adaptadores de enchufe (Marruecos usa Tipo C y E como España)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-slate-50">
+                            <input type="checkbox" onchange="saveChecklist()" class="rounded text-amber-500 focus:ring-amber-500">
+                            <span>Botiquín y snacks sin gluten precintados para el viaje</span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Emergency Numbers -->
+            <div class="bg-rose-50 border border-rose-200 p-6 rounded-2xl text-rose-900">
+                <h3 class="font-bold text-base mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-phone-volume text-rose-600"></i> Teléfonos Utiles y Emergencias en Marruecos
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-semibold mt-3">
+                    <div class="bg-white p-3 rounded-xl border border-rose-100">
+                        <span class="block text-slate-500 text-[10px]">Policía Urbana</span>
+                        <span class="text-lg text-rose-600 font-extrabold">19</span>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-rose-100">
+                        <span class="block text-slate-500 text-[10px]">Ambulancia / Bomberos</span>
+                        <span class="text-lg text-rose-600 font-extrabold">15</span>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-rose-100">
+                        <span class="block text-slate-500 text-[10px]">Consulado General de España en Tánger</span>
+                        <span class="text-sm text-slate-800 font-bold">+212 539 934 190</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Tab Switcher with robust element checking
+        function switchTab(tabId) {
+            // Hide all tab content sections
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(el => el.classList.add('hidden'));
+
+            // Deactivate all tab buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-slate-950', 'shadow-sm', 'font-semibold');
+                btn.classList.add('text-slate-300', 'hover:text-white', 'hover:bg-slate-800', 'font-medium');
+            });
+
+            // Show selected section
+            const targetSection = document.getElementById(tabId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+
+            // Highlight selected button
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-amber-500', 'text-slate-950', 'shadow-sm', 'font-semibold');
+                activeBtn.classList.remove('text-slate-300', 'hover:text-white', 'hover:bg-slate-800', 'font-medium');
+            }
+        }
+
+        // Food Filters Logic
+        function filterFood(category) {
+            document.querySelectorAll('.food-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-900', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-700');
+            });
+            const activeFilterBtn = document.getElementById('food-btn-' + category);
+            if (activeFilterBtn) {
+                activeFilterBtn.classList.add('bg-slate-900', 'text-white');
+            }
+
+            const cards = document.querySelectorAll('.food-card');
+            cards.forEach(card => {
+                if (category === 'all') {
+                    card.classList.remove('hidden');
+                } else {
+                    if (card.classList.contains(category)) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        // Countdown Timer to Aug 2, 2027 10:50:00 AM
+        function updateCountdown() {
+            const eclipseDate = new Date('August 2, 2027 10:50:00').getTime();
+            const now = new Date().getTime();
+            const difference = eclipseDate - now;
+
+            if (difference > 0) {
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+
+                const daysEl = document.getElementById('days');
+                const hoursEl = document.getElementById('hours');
+                const minsEl = document.getElementById('mins');
+
+                if (daysEl) daysEl.innerText = days;
+                if (hoursEl) hoursEl.innerText = hours;
+                if (minsEl) minsEl.innerText = minutes;
+            } else {
+                if (document.getElementById('days')) document.getElementById('days').innerText = '0';
+                if (document.getElementById('hours')) document.getElementById('hours').innerText = '0';
+                if (document.getElementById('mins')) document.getElementById('mins').innerText = '0';
+            }
+        }
+
+        // Currency Converters
+        function convertEurToMad() {
+            const eur = parseFloat(document.getElementById('input-eur').value);
+            if (!isNaN(eur)) {
+                document.getElementById('input-mad').value = (eur * 10.8).toFixed(2);
+            } else {
+                document.getElementById('input-mad').value = '';
+            }
+        }
+
+        function convertMadToEur() {
+            const mad = parseFloat(document.getElementById('input-mad').value);
+            if (!isNaN(mad)) {
+                document.getElementById('input-eur').value = (mad / 10.8).toFixed(2);
+            } else {
+                document.getElementById('input-eur').value = '';
+            }
+        }
+
+        // Checklist persistence in localStorage
+        function saveChecklist() {
+            const checkboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
+            const state = Array.from(checkboxes).map(cb => cb.checked);
+            try {
+                localStorage.setItem('tanger2027_checklist', JSON.stringify(state));
+            } catch(e) {
+                console.log('LocalStorage not available');
+            }
+        }
+
+        function loadChecklist() {
+            try {
+                const saved = localStorage.getItem('tanger2027_checklist');
+                if (saved) {
+                    const state = JSON.parse(saved);
+                    const checkboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
+                    checkboxes.forEach((cb, index) => {
+                        if (state[index] !== undefined) cb.checked = state[index];
+                    });
+                }
+            } catch(e) {
+                console.log('LocalStorage not available');
+            }
+        }
+
+        window.onload = function() {
+            updateCountdown();
+            setInterval(updateCountdown, 60000);
+            loadChecklist();
+        };
+    </script>
+</body>
+</html>

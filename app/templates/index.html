@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Server & Explorer</title>
+    <meta name="description" content="Servidor de archivos HTML estáticos de alto rendimiento con panel de gestión interactivo.">
+    
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Highlight.js for Code Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+
+    <!-- Custom Design Stylesheet with Cache Buster -->
+    <link rel="stylesheet" href="/_static/css/styles.css?v=2.1.0">
+</head>
+<body>
+    <div class="app-container">
+        <!-- GLOBAL APP HEADER / TOPBAR -->
+        <header class="app-topbar">
+            <div class="topbar-left">
+                <!-- Mobile Sidebar Hamburger Toggle -->
+                <button class="btn-icon-subtle mobile-menu-btn" id="btn-mobile-sidebar-toggle" aria-label="Abrir menú" title="Abrir navegación">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+                <div class="app-brand">
+                    <div class="brand-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                        </svg>
+                    </div>
+                    <div class="brand-text-wrap">
+                        <span class="brand-name">HTML Server</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEARCH / COMMAND PALETTE TRIGGER -->
+            <div class="topbar-center">
+                <button class="command-trigger" id="btn-cmd-trigger" aria-label="Buscar archivos">
+                    <i data-lucide="search" class="w-4 h-4 text-muted"></i>
+                    <span class="search-placeholder">Buscar archivos o rutas...</span>
+                    <kbd class="kbd-badge"><span class="kbd-cmd">⌘</span>K</kbd>
+                </button>
+            </div>
+
+            <!-- HEADER ACTIONS -->
+            <div class="topbar-right">
+                <button class="btn btn-ghost" id="btn-refresh" title="Recargar contenido (R)" aria-label="Recargar">
+                    <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                </button>
+                <button class="btn btn-secondary" id="btn-new-folder" title="Crear carpeta (N)">
+                    <i data-lucide="folder-plus" class="w-4 h-4"></i>
+                    <span class="btn-label">Nueva Carpeta</span>
+                </button>
+                <button class="btn btn-primary" id="btn-upload" title="Subir archivos (U)">
+                    <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                    <span class="btn-label">Subir HTML</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN LAYOUT -->
+        <div class="app-main-layout">
+            <!-- BACKDROP FOR MOBILE SIDEBAR -->
+            <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+            <!-- SIDEBAR -->
+            <aside class="app-sidebar" id="app-sidebar">
+                <div class="sidebar-mobile-header">
+                    <div class="sidebar-mobile-title-wrap">
+                        <i data-lucide="folder-tree" class="w-4 h-4 text-accent"></i>
+                        <span class="sidebar-mobile-title">Explorador</span>
+                    </div>
+                    <button class="btn-icon-subtle btn-sidebar-close" id="btn-close-sidebar" aria-label="Cerrar menú">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <div class="sidebar-group">
+                    <span class="sidebar-heading">UBICACIONES</span>
+                    <nav class="sidebar-menu">
+                        <a href="javascript:void(0)" class="sidebar-item active" data-path="" id="side-nav-root">
+                            <i data-lucide="hard-drive" class="w-4 h-4"></i>
+                            <span class="item-label">Raíz (html_storage)</span>
+                            <span class="item-counter" id="side-total-count">0</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="sidebar-group flex-1">
+                    <div class="sidebar-heading-row">
+                        <span class="sidebar-heading">DIRECTORIOS</span>
+                        <button class="btn-icon-subtle" id="btn-sidebar-refresh-tree" title="Actualizar árbol">
+                            <i data-lucide="refresh-ccw" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar-tree" id="sidebar-folder-tree">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- STORAGE USAGE FOOTER -->
+                <div class="sidebar-footer">
+                    <div class="storage-card">
+                        <div class="storage-card-header">
+                            <div class="storage-title">
+                                <i data-lucide="database" class="w-3.5 h-3.5 text-accent"></i>
+                                <span>Almacenamiento</span>
+                            </div>
+                            <span class="storage-size-badge" id="storage-used-size">0 KB</span>
+                        </div>
+                        <div class="storage-stats-row">
+                            <div class="stat-pill">
+                                <span class="stat-num" id="stat-html-count">0</span>
+                                <span class="stat-name">HTMLs</span>
+                            </div>
+                            <div class="stat-pill">
+                                <span class="stat-num" id="stat-folders-count">0</span>
+                                <span class="stat-name">Carpetas</span>
+                            </div>
+                            <div class="stat-pill">
+                                <span class="stat-num" id="stat-files-count">0</span>
+                                <span class="stat-name">Archivos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- EXPLORER CONTENT WORKSPACE -->
+            <main class="app-workspace" id="app-workspace">
+                <!-- WORKSPACE TOOLBAR -->
+                <div class="workspace-toolbar">
+                    <!-- BREADCRUMB BAR -->
+                    <div class="breadcrumb-bar" id="breadcrumb-bar">
+                        <!-- Injected by JS -->
+                    </div>
+
+                    <div class="toolbar-controls">
+                        <!-- FILTER CHIPS -->
+                        <div class="segmented-control">
+                            <button class="segment-btn active" data-filter="all" id="filter-btn-all">Todos</button>
+                            <button class="segment-btn" data-filter="html" id="filter-btn-html">HTMLs</button>
+                        </div>
+
+                        <!-- VIEW MODE SWITCHER -->
+                        <div class="view-switch">
+                            <button class="view-switch-btn active" id="btn-view-grid" title="Vista en cuadrícula">
+                                <i data-lucide="grid" class="w-4 h-4"></i>
+                            </button>
+                            <button class="view-switch-btn" id="btn-view-list" title="Vista en lista">
+                                <i data-lucide="list" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DRAG & DROP ZONE BANNER -->
+                <div class="quick-dropzone" id="quick-dropzone">
+                    <input type="file" id="file-picker-input" multiple accept=".html,.htm,.css,.js,.svg,.png,.jpg,.jpeg,.json,.txt" style="display:none;">
+                    <div class="dropzone-box">
+                        <div class="dropzone-icon-wrap">
+                            <i data-lucide="upload" class="w-5 h-5 text-accent"></i>
+                        </div>
+                        <div class="dropzone-info">
+                            <span class="dropzone-main-text">Arrastra y suelta tus archivos aquí</span>
+                            <span class="dropzone-sub-text">o <button type="button" class="btn-link" id="btn-open-file-dialog">selecciona desde tu ordenador</button> para guardar en <code id="dropzone-dir-label">/</code></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ITEMS CONTAINER -->
+                <div class="workspace-items-area" id="workspace-items-area">
+                    <!-- Cards or table rendered here -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- FULL SCREEN DRAG OVERLAY -->
+    <div class="global-drag-overlay" id="global-drag-overlay">
+        <div class="drag-overlay-content">
+            <div class="drag-glow-circle">
+                <i data-lucide="cloud-upload" class="w-12 h-12 text-accent"></i>
+            </div>
+            <h2>Suelta los archivos para subirlos</h2>
+            <p>Se guardarán directamente en <code id="drag-overlay-path">/</code></p>
+        </div>
+    </div>
+
+    <!-- COMMAND PALETTE (CMD+K) -->
+    <div class="cmd-overlay" id="cmd-overlay">
+        <div class="cmd-dialog">
+            <div class="cmd-input-row">
+                <i data-lucide="search" class="w-5 h-5 text-muted"></i>
+                <input type="text" id="cmd-input" placeholder="Escribe para buscar archivos o navegar a rutas..." autocomplete="off">
+                <kbd class="kbd-badge">ESC</kbd>
+            </div>
+            <div class="cmd-results" id="cmd-results">
+                <!-- Results rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE-OVER INSPECTOR / PREVIEW MODAL -->
+    <div class="preview-drawer-backdrop" id="preview-drawer-backdrop">
+        <div class="preview-drawer" id="preview-drawer">
+            <!-- DRAWER HEADER -->
+            <div class="drawer-header">
+                <div class="drawer-file-meta">
+                    <span class="file-tag-badge" id="drawer-ext-badge">HTML</span>
+                    <div class="drawer-title-group">
+                        <h3 class="drawer-filename" id="drawer-filename">archivo.html</h3>
+                        <div class="drawer-url-chip" id="drawer-url-chip" title="Haz clic para copiar URL directa">
+                            <i data-lucide="link" class="w-3.5 h-3.5 text-accent"></i>
+                            <span id="drawer-url-text">/CIM/fichajes-cim.html</span>
+                            <i data-lucide="copy" class="w-3 h-3 text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="drawer-header-actions">
+                    <!-- RESPONSIVE VIEWPORT CONTROLS -->
+                    <div class="viewport-toggles" id="viewport-toggles">
+                        <button class="vp-btn active" data-width="100%" title="Desktop (100%)">
+                            <i data-lucide="monitor" class="w-4 h-4"></i>
+                        </button>
+                        <button class="vp-btn" data-width="768px" title="Tablet (768px)">
+                            <i data-lucide="tablet" class="w-4 h-4"></i>
+                        </button>
+                        <button class="vp-btn" data-width="390px" title="Móvil (390px)">
+                            <i data-lucide="smartphone" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- VIEW TABS -->
+                    <div class="mode-tabs">
+                        <button class="tab-pill active" id="tab-live-view">
+                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                            <span>Web en Vivo</span>
+                        </button>
+                        <button class="tab-pill" id="tab-code-view">
+                            <i data-lucide="code" class="w-3.5 h-3.5"></i>
+                            <span>Código Fuente</span>
+                        </button>
+                    </div>
+
+                    <a href="#" target="_blank" class="btn btn-ghost" id="drawer-open-external" title="Abrir en pestaña nueva">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                    </a>
+                    <button class="btn btn-ghost" id="drawer-close-btn" title="Cerrar (Esc)">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- DRAWER BODY -->
+            <div class="drawer-body">
+                <!-- LIVE IFRAME -->
+                <div class="iframe-container" id="drawer-iframe-container">
+                    <iframe id="drawer-iframe" src="about:blank" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+                </div>
+
+                <!-- CODE VIEWER -->
+                <div class="code-container" id="drawer-code-container" style="display:none;">
+                    <pre><code class="language-html" id="drawer-code-block"></code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: NUEVA CARPETA -->
+    <div class="modal-dialog-backdrop" id="modal-folder-backdrop">
+        <div class="modal-dialog-card">
+            <div class="dialog-header">
+                <div class="dialog-title-icon">
+                    <i data-lucide="folder-plus" class="w-5 h-5 text-accent"></i>
+                </div>
+                <h3>Crear Nueva Carpeta</h3>
+                <button class="dialog-close-btn" id="btn-close-folder-dialog">&times;</button>
+            </div>
+            <div class="dialog-body">
+                <p class="dialog-desc">Ubicación de creación: <code id="dialog-folder-parent-path">/</code></p>
+                <div class="form-field">
+                    <label for="input-new-folder-name">Nombre del directorio</label>
+                    <input type="text" id="input-new-folder-name" placeholder="Ej: CIM, Reportes, Dashboard..." autocomplete="off">
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button class="btn btn-secondary" id="btn-cancel-folder-dialog">Cancelar</button>
+                <button class="btn btn-primary" id="btn-submit-folder-dialog">Crear Carpeta</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: RENOMBRAR -->
+    <div class="modal-dialog-backdrop" id="modal-rename-backdrop">
+        <div class="modal-dialog-card">
+            <div class="dialog-header">
+                <div class="dialog-title-icon">
+                    <i data-lucide="edit-3" class="w-5 h-5 text-accent"></i>
+                </div>
+                <h3>Renombrar Elemento</h3>
+                <button class="dialog-close-btn" id="btn-close-rename-dialog">&times;</button>
+            </div>
+            <div class="dialog-body">
+                <div class="form-field">
+                    <label for="input-rename-name">Nuevo nombre</label>
+                    <input type="text" id="input-rename-name" autocomplete="off">
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button class="btn btn-secondary" id="btn-cancel-rename-dialog">Cancelar</button>
+                <button class="btn btn-primary" id="btn-submit-rename-dialog">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTEXT MENU -->
+    <div class="context-menu" id="custom-context-menu">
+        <div class="ctx-item" id="ctx-open">
+            <i data-lucide="external-link" class="w-4 h-4"></i>
+            <span>Abrir URL directa</span>
+        </div>
+        <div class="ctx-item" id="ctx-preview">
+            <i data-lucide="eye" class="w-4 h-4"></i>
+            <span>Previsualizar</span>
+        </div>
+        <div class="ctx-item" id="ctx-copy-url">
+            <i data-lucide="copy" class="w-4 h-4"></i>
+            <span>Copiar enlace público</span>
+        </div>
+        <div class="ctx-divider"></div>
+        <div class="ctx-item" id="ctx-rename">
+            <i data-lucide="edit-2" class="w-4 h-4"></i>
+            <span>Renombrar</span>
+        </div>
+        <div class="ctx-item text-danger" id="ctx-delete">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <span>Eliminar</span>
+        </div>
+    </div>
+
+    <!-- FLOATING TOAST NOTIFICATIONS -->
+    <div class="toast-stack" id="toast-stack"></div>
+
+    <!-- Application Script with Cache Buster -->
+    <script src="/_static/js/app.js?v=2.1.0"></script>
+</body>
+</html>

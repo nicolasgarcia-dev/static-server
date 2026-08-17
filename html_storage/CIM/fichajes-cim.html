@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIM - Control de Fichajes y Horarios</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #0f172a;
+            --bg-card: #1e293b;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.3);
+            --success: #10b981;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg-page); color: var(--text-main); min-height: 100vh; padding: 2rem; }
+        .container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 800; }
+        .logo span { color: var(--primary); }
+        .badge { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .card-title { font-size: 0.85rem; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+        .card-value { font-size: 1.75rem; font-weight: 700; margin-top: 0.5rem; }
+        .time-box { background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary-glow); border-radius: 16px; padding: 2rem; text-align: center; }
+        .clock { font-size: 3rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--primary); }
+        .btn-punch { background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; border: none; padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: 700; border-radius: 12px; cursor: pointer; margin-top: 1rem; box-shadow: 0 4px 15px var(--primary-glow); transition: all 0.2s; }
+        .btn-punch:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--primary-glow); }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { text-align: left; padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        th { color: var(--text-sub); font-size: 0.8rem; text-transform: uppercase; }
+        .tag-ok { color: var(--success); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                🏢 <span>CIM</span> Portal de Fichajes
+            </div>
+            <div class="badge">● Turno Activo</div>
+        </header>
+
+        <div class="time-box">
+            <div class="clock" id="live-clock">08:30:14</div>
+            <p style="color: var(--text-sub); margin-top: 0.25rem;">Lunes, 17 de Agosto de 2026</p>
+            <button class="btn-punch" onclick="alert('¡Fichaje registrado con éxito!')">Registrar Entrada / Salida</button>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">Horas Trabajadas Hoy</div>
+                <div class="card-value">6h 45m</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Semana Actual</div>
+                <div class="card-value">34h 12m</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Puntualidad</div>
+                <div class="card-value" style="color: var(--success);">100%</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Registro Reciente</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Entrada</th>
+                        <th>Salida</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>17/08/2026</td>
+                        <td>08:00</td>
+                        <td>--:--</td>
+                        <td>En curso</td>
+                        <td><span class="tag-ok">En jornada</span></td>
+                    </tr>
+                    <tr>
+                        <td>14/08/2026</td>
+                        <td>08:02</td>
+                        <td>16:30</td>
+                        <td>8h 28m</td>
+                        <td><span class="tag-ok">Completado</span></td>
+                    </tr>
+                    <tr>
+                        <td>13/08/2026</td>
+                        <td>07:58</td>
+                        <td>16:00</td>
+                        <td>8h 02m</td>
+                        <td><span class="tag-ok">Completado</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('live-clock').innerText = now.toTimeString().split(' ')[0];
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
