@@ -55,9 +55,22 @@ def sanitize_and_validate_name(name: str) -> str:
 
 
 class StorageService:
-    def __init__(self, base_dir: Optional[Path] = None):
+    def __init__(self, base_dir: Optional[Path] = None, url_prefix: str = "", root_label: Optional[str] = None):
         self.base_dir = (base_dir or STORAGE_DIR).resolve()
         self.base_dir.mkdir(parents=True, exist_ok=True)
+        self.url_prefix = url_prefix.rstrip("/")
+        self.root_label = root_label or ("html_storage" if not self.url_prefix else self.url_prefix.lstrip("/"))
+
+    def _get_url(self, item_rel_path: str) -> str:
+        """Construct public direct serving URL for an item."""
+        clean_path = item_rel_path.strip().lstrip("/\\")
+        if self.url_prefix:
+            url = f"{self.url_prefix}/{clean_path}".replace("//", "/")
+        else:
+            url = f"/{clean_path}"
+        if not url.startswith("/"):
+            url = "/" + url
+        return url
 
     def _safe_resolve(self, relative_path: str = "") -> Path:
         """
@@ -128,7 +141,7 @@ class StorageService:
                     "size": 0,
                     "size_formatted": f"{children_count} elementos",
                     "modified": modified,
-                    "url": f"/{item_rel_path}",
+                    "url": self._get_url(item_rel_path),
                     "extension": "",
                     "children_count": children_count
                 })
@@ -142,7 +155,7 @@ class StorageService:
                     "size": stat.st_size,
                     "size_formatted": self._format_size(stat.st_size),
                     "modified": modified,
-                    "url": f"/{item_rel_path}",
+                    "url": self._get_url(item_rel_path),
                     "extension": ext,
                     "is_html": ext in [".html", ".htm"],
                     "mime_type": mime_type or "application/octet-stream"
@@ -152,7 +165,7 @@ class StorageService:
         items.sort(key=lambda x: (not x["is_dir"], x["name"].lower()))
 
         # Build breadcrumbs
-        breadcrumbs = [{"name": "html_storage", "path": ""}]
+        breadcrumbs = [{"name": self.root_label, "path": ""}]
         if rel_from_base:
             parts = rel_from_base.split("/")
             accum = ""
@@ -213,7 +226,7 @@ class StorageService:
         return {
             "name": clean_name,
             "path": rel_path,
-            "url": f"/{rel_path}",
+            "url": self._get_url(rel_path),
             "message": f"Carpeta '{clean_name}' creada correctamente."
         }
 
@@ -243,7 +256,7 @@ class StorageService:
             "path": rel_path,
             "size": len(content_bytes),
             "size_formatted": self._format_size(len(content_bytes)),
-            "url": f"/{rel_path}",
+            "url": self._get_url(rel_path),
             "is_html": ext in [".html", ".htm"],
             "message": f"Archivo '{clean_filename}' guardado correctamente."
         }
@@ -297,7 +310,7 @@ class StorageService:
             "old_path": relative_path,
             "new_path": new_rel_path,
             "new_name": clean_new_name,
-            "url": f"/{new_rel_path}",
+            "url": self._get_url(new_rel_path),
             "message": f"Renombrado a '{clean_new_name}' con éxito."
         }
 
@@ -333,10 +346,53 @@ class StorageService:
             "size": stat.st_size,
             "size_formatted": self._format_size(stat.st_size),
             "content": content,
-            "url": f"/{relative_path}",
+            "url": self._get_url(relative_path),
             "mime_type": mime_type or "text/plain",
             "is_html": ext in [".html", ".htm"]
         }
+
+    def move_item_to_user(self, source_rel_path: str, target_username: str, dest_subpath: str = "") -> Dict[str, Any]:
+        """
+        Admin feature: Move an item (file or folder) to a target user's space.
+        """
+        if not source_rel_path.strip():
+            raise ValueError("No se puede mover la carpeta raíz.")
+
+        source_path = self._safe_resolve(source_rel_path)
+        if not source_path.exists():
+            raise FileNotFoundError(f"El elemento de origen '{source_rel_path}' no existe.")
+
+        clean_user = target_username.strip().lower()
+        target_user_root = (STORAGE_DIR / clean_user).resolve()
+        target_user_root.mkdir(parents=True, exist_ok=True)
+
+        if dest_subpath.strip():
+            dest_dir = (target_user_root / dest_subpath.strip().lstrip("/\\")).resolve()
+            dest_dir.mkdir(parents=True, exist_ok=True)
+        else:
+            dest_dir = target_user_root
+
+        dest_file_path = (dest_dir / source_path.name).resolve()
+        if dest_file_path.exists():
+            raise FileExistsError(
+                f"Ya existe un elemento con el nombre '{source_path.name}' en la carpeta de destino del usuario '{clean_user}'."
+            )
+
+        # Move item
+        shutil.move(str(source_path), str(dest_file_path))
+
+        new_rel_to_user = str(dest_file_path.relative_to(target_user_root)).replace("\\", "/")
+        new_rel_to_root = str(dest_file_path.relative_to(STORAGE_DIR)).replace("\\", "/")
+
+        return {
+            "original_path": source_rel_path,
+            "target_user": clean_user,
+            "new_path_in_user": new_rel_to_user,
+            "new_path_in_root": new_rel_to_root,
+            "new_url": f"/{new_rel_to_root}",
+            "message": f"Elemento '{source_path.name}' movido con éxito al usuario '{clean_user}'."
+        }
+
 
     def get_stats(self) -> Dict[str, Any]:
         """

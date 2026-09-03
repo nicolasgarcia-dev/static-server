@@ -104,8 +104,55 @@ document.addEventListener('DOMContentLoaded', () => {
         ctxPreview: document.getElementById('ctx-preview'),
         ctxCopyUrl: document.getElementById('ctx-copy-url'),
         ctxRename: document.getElementById('ctx-rename'),
-        ctxDelete: document.getElementById('ctx-delete')
+        ctxMoveUser: document.getElementById('ctx-move-user'),
+        ctxDelete: document.getElementById('ctx-delete'),
+
+        // User Profile & Dropdown
+        btnUserProfile: document.getElementById('btn-user-profile'),
+        userDropdownMenu: document.getElementById('user-dropdown-menu'),
+        btnOpenUsersModal: document.getElementById('btn-open-users-modal'),
+        btnLogout: document.getElementById('btn-logout'),
+
+        // Admin User Management Modal
+        modalUsersBackdrop: document.getElementById('modal-users-backdrop'),
+        btnCloseUsersDialog: document.getElementById('btn-close-users-dialog'),
+        formAdminCreateUser: document.getElementById('form-admin-create-user'),
+        inputAdminUsername: document.getElementById('input-admin-username'),
+        inputAdminPassword: document.getElementById('input-admin-password'),
+        checkAdminIsAdmin: document.getElementById('check-admin-is-admin'),
+        adminUserCount: document.getElementById('admin-user-count'),
+        usersTableBody: document.getElementById('users-table-body'),
+
+        // Admin Move Item Modal
+        modalMoveBackdrop: document.getElementById('modal-move-backdrop'),
+        btnCloseMoveDialog: document.getElementById('btn-close-move-dialog'),
+        btnCancelMoveDialog: document.getElementById('btn-cancel-move-dialog'),
+        btnSubmitMoveDialog: document.getElementById('btn-submit-move-dialog'),
+        dialogMoveSourcePath: document.getElementById('dialog-move-source-path'),
+        selectMoveTargetUser: document.getElementById('select-move-target-user'),
+        inputMoveDestSubpath: document.getElementById('input-move-dest-subpath')
     };
+
+    const currentUser = window.__CURRENT_USER__ || null;
+
+    // Helper: Authenticated Fetch with automatic 401 handling
+    async function authFetch(url, options = {}) {
+        const headers = options.headers ? { ...options.headers } : {};
+        const token = localStorage.getItem('html_server_token');
+        if (token && !headers['Authorization']) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        options.headers = headers;
+
+        const res = await fetch(url, options);
+        if (res.status === 401) {
+            localStorage.removeItem('html_server_token');
+            localStorage.removeItem('html_server_user');
+            window.location.href = '/login';
+            throw new Error('Sesión expirada o no autorizada.');
+        }
+        return res;
+    }
 
     // Initialize Lucide Icons
     function refreshIcons() {
@@ -157,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     async function apiFetchList(path = '') {
         try {
-            const res = await fetch(`/api/explorer/list?path=${encodeURIComponent(path)}`);
+            const res = await authFetch(`/api/explorer/list?path=${encodeURIComponent(path)}`);
             const data = await res.json();
             if (!res.ok) throw new Error(data.detail || 'Error al cargar directorio');
             return data.data;
@@ -169,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function apiFetchTree() {
         try {
-            const res = await fetch('/api/explorer/tree');
+            const res = await authFetch('/api/explorer/tree');
             const data = await res.json();
             if (res.ok) return data.tree;
         } catch (err) {
@@ -180,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function apiFetchStats() {
         try {
-            const res = await fetch('/api/explorer/stats');
+            const res = await authFetch('/api/explorer/stats');
             const data = await res.json();
             if (res.ok && data.stats) {
                 elements.storageUsedSize.textContent = data.stats.total_size_formatted;
@@ -193,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error stats:', err);
         }
     }
+
 
     // ==========================================
     // RENDER FUNCTIONS (XSS-PROTECTED)
@@ -543,7 +591,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast(`Subiendo ${fileList.length} archivo(s)...`, 'info');
 
         try {
-            const res = await fetch('/api/explorer/upload', {
+            const res = await authFetch('/api/explorer/upload', {
                 method: 'POST',
                 body: formData
             });
@@ -584,6 +632,13 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.ctxOpen.style.display = 'flex';
             elements.ctxPreview.style.display = 'flex';
         }
+
+        // Show "Mover a usuario" only if admin
+        if (currentUser && currentUser.is_admin && elements.ctxMoveUser) {
+            elements.ctxMoveUser.style.display = 'flex';
+        } else if (elements.ctxMoveUser) {
+            elements.ctxMoveUser.style.display = 'none';
+        }
     }
 
     function hideContextMenu() {
@@ -619,6 +674,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    if (elements.ctxMoveUser) {
+        elements.ctxMoveUser.addEventListener('click', () => {
+            if (state.activeItemForContext) {
+                openMoveDialog(state.activeItemForContext);
+            }
+        });
+    }
+
     elements.ctxDelete.addEventListener('click', () => {
         if (state.activeItemForContext) {
             confirmDelete(state.activeItemForContext);
@@ -647,7 +710,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Load code block safely
         try {
-            const res = await fetch(`/api/explorer/file-content?path=${encodeURIComponent(item.path)}`);
+            const res = await authFetch(`/api/explorer/file-content?path=${encodeURIComponent(item.path)}`);
             const data = await res.json();
             if (res.ok && data.data) {
                 elements.drawerCodeBlock.textContent = data.data.content;
@@ -714,7 +777,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const res = await fetch('/api/explorer/folders', {
+            const res = await authFetch('/api/explorer/folders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ path: state.currentPath, name })
@@ -746,7 +809,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const res = await fetch('/api/explorer/rename', {
+            const res = await authFetch('/api/explorer/rename', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ path: state.activeRenameItem.path, new_name: newName })
@@ -771,7 +834,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!confirm(msg)) return;
 
         try {
-            const res = await fetch('/api/explorer/items', {
+            const res = await authFetch('/api/explorer/items', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ path: item.path })
@@ -785,6 +848,163 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast(err.message, 'error');
         }
     }
+
+    // ==========================================
+    // MOVE ITEM TO USER (ADMIN ONLY)
+    // ==========================================
+    async function openMoveDialog(item) {
+        if (!elements.modalMoveBackdrop) return;
+        elements.dialogMoveSourcePath.textContent = item.path;
+        elements.inputMoveDestSubpath.value = '';
+        elements.selectMoveTargetUser.innerHTML = '<option value="">Cargando usuarios...</option>';
+        elements.modalMoveBackdrop.classList.add('active');
+
+        try {
+            const res = await authFetch('/api/admin/users');
+            const data = await res.json();
+            if (res.ok && data.users) {
+                elements.selectMoveTargetUser.innerHTML = '';
+                data.users.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u.username;
+                    opt.textContent = `${u.username} (${u.is_admin ? 'Admin' : 'Usuario'})${u.is_active ? '' : ' [Deshabilitado]'}`;
+                    elements.selectMoveTargetUser.appendChild(opt);
+                });
+            }
+        } catch (err) {
+            showToast('Error al cargar la lista de usuarios', 'error');
+        }
+    }
+
+    async function submitMoveDialog() {
+        if (!state.activeItemForContext) return;
+        const targetUser = elements.selectMoveTargetUser.value;
+        if (!targetUser) {
+            showToast('Selecciona un usuario de destino', 'error');
+            return;
+        }
+
+        const destSubpath = elements.inputMoveDestSubpath.value.trim();
+
+        try {
+            const res = await authFetch('/api/admin/move-item', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    source_path: state.activeItemForContext.path,
+                    target_username: targetUser,
+                    dest_subpath: destSubpath
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || 'Error al mover elemento');
+
+            showToast(data.data.message || 'Elemento movido con éxito', 'success');
+            elements.modalMoveBackdrop.classList.remove('active');
+            await navigateTo(state.currentPath);
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    }
+
+    // ==========================================
+    // ADMIN USER MANAGEMENT MODAL
+    // ==========================================
+    async function openUsersModal() {
+        if (!elements.modalUsersBackdrop) return;
+        elements.modalUsersBackdrop.classList.add('active');
+        await loadAdminUsers();
+    }
+
+    async function loadAdminUsers() {
+        if (!elements.usersTableBody) return;
+        try {
+            const res = await authFetch('/api/admin/users');
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || 'Error al cargar usuarios');
+
+            elements.adminUserCount.textContent = data.users.length;
+            elements.usersTableBody.innerHTML = '';
+
+            data.users.forEach(u => {
+                const tr = document.createElement('tr');
+                const isCurrent = currentUser && currentUser.username === u.username;
+
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(u.username)}</strong>${isCurrent ? ' <span style="font-size: 0.7rem; color: var(--accent);">(Tú)</span>' : ''}</td>
+                    <td>
+                        <span class="badge-role ${u.is_admin ? 'badge-admin' : 'badge-user'}">
+                            ${u.is_admin ? 'Admin' : 'Usuario'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge ${u.is_active ? 'status-active' : 'status-disabled'}">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor;"></span>
+                            ${u.is_active ? 'Habilitado' : 'Deshabilitado'}
+                        </span>
+                    </td>
+                    <td style="color: var(--text-muted); font-size: 0.75rem;">${escapeHtml(u.created_at ? u.created_at.split('T')[0] : '-')}</td>
+                    <td class="text-right">
+                        <div class="table-actions">
+                            ${!isCurrent ? `
+                                <button type="button" class="btn-table-action btn-toggle-status" data-user="${escapeHtml(u.username)}" data-active="${u.is_active}">
+                                    ${u.is_active ? 'Deshabilitar' : 'Habilitar'}
+                                </button>
+                                <button type="button" class="btn-table-action btn-danger-action btn-delete-user" data-user="${escapeHtml(u.username)}">
+                                    Eliminar
+                                </button>
+                            ` : '<span style="font-size: 0.75rem; color: var(--text-muted);">-</span>'}
+                        </div>
+                    </td>
+                `;
+
+                const toggleBtn = tr.querySelector('.btn-toggle-status');
+                if (toggleBtn) {
+                    toggleBtn.addEventListener('click', async () => {
+                        const targetUser = toggleBtn.dataset.user;
+                        const currentlyActive = toggleBtn.dataset.active === 'true';
+                        try {
+                            const patchRes = await authFetch(`/api/admin/users/${encodeURIComponent(targetUser)}/status`, {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ is_active: !currentlyActive })
+                            });
+                            const patchData = await patchRes.json();
+                            if (!patchRes.ok) throw new Error(patchData.detail || 'Error al actualizar estado');
+                            showToast(patchData.message, 'success');
+                            await loadAdminUsers();
+                        } catch (err) {
+                            showToast(err.message, 'error');
+                        }
+                    });
+                }
+
+                const deleteBtn = tr.querySelector('.btn-delete-user');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', async () => {
+                        const targetUser = deleteBtn.dataset.user;
+                        if (!confirm(`¿Estás seguro de que deseas eliminar al usuario "${targetUser}" del sistema?`)) return;
+                        try {
+                            const delRes = await authFetch(`/api/admin/users/${encodeURIComponent(targetUser)}`, {
+                                method: 'DELETE'
+                            });
+                            const delData = await delRes.json();
+                            if (!delRes.ok) throw new Error(delData.detail || 'Error al eliminar usuario');
+                            showToast(delData.message, 'success');
+                            await loadAdminUsers();
+                        } catch (err) {
+                            showToast(err.message, 'error');
+                        }
+                    });
+                }
+
+                elements.usersTableBody.appendChild(tr);
+            });
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    }
+
 
     // ==========================================
     // COMMAND PALETTE (CMD+K)
@@ -958,6 +1178,8 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.modalFolderBackdrop.classList.remove('active');
             elements.modalRenameBackdrop.classList.remove('active');
             elements.previewDrawerBackdrop.classList.remove('active');
+            if (elements.modalUsersBackdrop) elements.modalUsersBackdrop.classList.remove('active');
+            if (elements.modalMoveBackdrop) elements.modalMoveBackdrop.classList.remove('active');
             closeMobileSidebar();
             closeCommandPalette();
             hideContextMenu();
@@ -980,6 +1202,93 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // User Profile Dropdown & Logout
+    if (elements.btnUserProfile) {
+        elements.btnUserProfile.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = elements.userDropdownMenu.classList.toggle('active');
+            elements.btnUserProfile.setAttribute('aria-expanded', isOpen);
+        });
+    }
+
+    document.addEventListener('click', () => {
+        if (elements.userDropdownMenu) {
+            elements.userDropdownMenu.classList.remove('active');
+            if (elements.btnUserProfile) elements.btnUserProfile.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    if (elements.btnLogout) {
+        elements.btnLogout.addEventListener('click', async () => {
+            try {
+                await authFetch('/api/auth/logout', { method: 'POST' });
+            } catch(e) {}
+            localStorage.removeItem('html_server_token');
+            localStorage.removeItem('html_server_user');
+            window.location.href = '/login';
+        });
+    }
+
+    // Admin Users Modal Listeners
+    if (elements.btnOpenUsersModal) {
+        elements.btnOpenUsersModal.addEventListener('click', () => {
+            if (elements.userDropdownMenu) elements.userDropdownMenu.classList.remove('active');
+            openUsersModal();
+        });
+    }
+
+    if (elements.btnCloseUsersDialog) {
+        elements.btnCloseUsersDialog.addEventListener('click', () => {
+            elements.modalUsersBackdrop.classList.remove('active');
+        });
+    }
+
+    if (elements.formAdminCreateUser) {
+        elements.formAdminCreateUser.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = elements.inputAdminUsername.value.trim().toLowerCase();
+            const password = elements.inputAdminPassword.value;
+            const is_admin = elements.checkAdminIsAdmin.checked;
+
+            if (!username || !password) {
+                showToast('Introduce usuario y contraseña', 'error');
+                return;
+            }
+
+            try {
+                const res = await authFetch('/api/admin/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, is_admin })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Error al crear usuario');
+
+                showToast(data.message || 'Usuario creado correctamente', 'success');
+                elements.formAdminCreateUser.reset();
+                await loadAdminUsers();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        });
+    }
+
+    // Admin Move Modal Listeners
+    if (elements.btnCloseMoveDialog) {
+        elements.btnCloseMoveDialog.addEventListener('click', () => {
+            elements.modalMoveBackdrop.classList.remove('active');
+        });
+    }
+    if (elements.btnCancelMoveDialog) {
+        elements.btnCancelMoveDialog.addEventListener('click', () => {
+            elements.modalMoveBackdrop.classList.remove('active');
+        });
+    }
+    if (elements.btnSubmitMoveDialog) {
+        elements.btnSubmitMoveDialog.addEventListener('click', submitMoveDialog);
+    }
+
 
     // Init
     if (state.viewMode === 'list') {

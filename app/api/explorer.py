@@ -1,14 +1,34 @@
 import re
-from typing import List, Optional
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form, status
+from typing import List, Optional, Dict, Any
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form, status, Depends
 from pydantic import BaseModel, Field, field_validator
 
 from app.services.storage import StorageService, sanitize_and_validate_name
+from app.api.auth import get_current_user
+from app.config import STORAGE_DIR
 
 router = APIRouter(prefix="/api/explorer", tags=["Explorer"])
-storage = StorageService()
 
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100 MB max per file
+
+
+def get_user_storage(current_user: Dict[str, Any] = Depends(get_current_user)) -> StorageService:
+    """
+    Returns StorageService scoped to the current user.
+    Admins get root storage (access to all users and root files).
+    Regular users get an isolated sandbox storage (html_storage/<username>).
+    """
+    if current_user.get("is_admin"):
+        return StorageService(base_dir=STORAGE_DIR, url_prefix="", root_label="html_storage")
+    else:
+        username = current_user["username"]
+        user_dir = STORAGE_DIR / username
+        user_dir.mkdir(parents=True, exist_ok=True)
+        return StorageService(
+            base_dir=user_dir,
+            url_prefix=f"/{username}",
+            root_label=username
+        )
 
 
 class CreateFolderRequest(BaseModel):
@@ -34,7 +54,7 @@ class RenameItemRequest(BaseModel):
 
 
 @router.get("/list")
-async def list_directory(path: str = ""):
+async def list_directory(path: str = "", storage: StorageService = Depends(get_user_storage)):
     """Lista el contenido de un directorio con metadatos."""
     try:
         data = storage.list_directory(path)
@@ -48,7 +68,7 @@ async def list_directory(path: str = ""):
 
 
 @router.get("/tree")
-async def get_tree(path: str = ""):
+async def get_tree(path: str = "", storage: StorageService = Depends(get_user_storage)):
     """Devuelve la jerarquía de carpetas."""
     try:
         tree = storage.get_tree(path)
@@ -58,8 +78,8 @@ async def get_tree(path: str = ""):
 
 
 @router.get("/stats")
-async def get_stats():
-    """Devuelve estadísticas de uso de almacenamiento."""
+async def get_stats(storage: StorageService = Depends(get_user_storage)):
+    """Devuelve estadísticas de uso de almacenamiento del espacio accesible."""
     try:
         stats = storage.get_stats()
         return {"success": True, "stats": stats}
@@ -68,7 +88,7 @@ async def get_stats():
 
 
 @router.post("/folders")
-async def create_folder(req: CreateFolderRequest):
+async def create_folder(req: CreateFolderRequest, storage: StorageService = Depends(get_user_storage)):
     """Crea una nueva carpeta en la ruta indicada."""
     try:
         result = storage.create_folder(req.path, req.name)
@@ -84,7 +104,8 @@ async def create_folder(req: CreateFolderRequest):
 @router.post("/upload")
 async def upload_files(
     path: str = Form(""),
-    files: List[UploadFile] = File(...)
+    files: List[UploadFile] = File(...),
+    storage: StorageService = Depends(get_user_storage)
 ):
     """Sube uno o varios archivos a la carpeta especificada con validación de tamaño."""
     saved_files = []
@@ -110,7 +131,7 @@ async def upload_files(
 
 
 @router.delete("/items")
-async def delete_item(req: DeleteItemRequest):
+async def delete_item(req: DeleteItemRequest, storage: StorageService = Depends(get_user_storage)):
     """Elimina un archivo o directorio de forma segura."""
     try:
         result = storage.delete_item(req.path)
@@ -124,7 +145,7 @@ async def delete_item(req: DeleteItemRequest):
 
 
 @router.post("/rename")
-async def rename_item(req: RenameItemRequest):
+async def rename_item(req: RenameItemRequest, storage: StorageService = Depends(get_user_storage)):
     """Renombra un archivo o carpeta."""
     try:
         result = storage.rename_item(req.path, req.new_name)
@@ -140,7 +161,7 @@ async def rename_item(req: RenameItemRequest):
 
 
 @router.get("/file-content")
-async def get_file_content(path: str):
+async def get_file_content(path: str, storage: StorageService = Depends(get_user_storage)):
     """Obtiene el contenido de texto/código de un archivo."""
     try:
         data = storage.get_file_content(path)

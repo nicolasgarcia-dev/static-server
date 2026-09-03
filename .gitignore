@@ -68,7 +68,12 @@ Thumbs.db
 *.log
 *.tmp
 scratch/
+data/
+*.db
+*.sqlite
+*.sqlite3
 
 # Specific Deploy & System Scripts (as per repository setup)
 scripts/
 systemd/
+

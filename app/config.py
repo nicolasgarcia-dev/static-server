@@ -17,5 +17,11 @@ PORT = int(os.getenv("PORT", "5000"))
 TEMPLATES_DIR = BASE_DIR / "app" / "templates"
 STATIC_DIR = BASE_DIR / "app" / "static"
 
+# Data and database configuration
+DATA_DIR = BASE_DIR / "data"
+DB_PATH = Path(os.getenv("HTML_DB_PATH", str(DATA_DIR / "users.db"))).resolve()
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
 # Ensure storage directory exists
 STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+

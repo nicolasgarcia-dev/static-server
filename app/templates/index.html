@@ -68,6 +68,38 @@
                     <i data-lucide="upload-cloud" class="w-4 h-4"></i>
                     <span class="btn-label">Subir HTML</span>
                 </button>
+
+                <!-- USER PROFILE BADGE & DROPDOWN -->
+                <div class="user-profile-menu-wrap">
+                    <button class="user-profile-btn" id="btn-user-profile" aria-haspopup="true" aria-expanded="false" title="Cuenta de usuario">
+                        <div class="user-avatar" id="topbar-user-avatar">{{ (current_user.username[0] | upper) if current_user else 'U' }}</div>
+                        <span class="user-name-label" id="topbar-user-name">{{ current_user.username if current_user else 'Usuario' }}</span>
+                        {% if current_user and current_user.is_admin %}
+                        <span class="badge-role badge-admin">Admin</span>
+                        {% else %}
+                        <span class="badge-role badge-user">Usuario</span>
+                        {% endif %}
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 user-chevron"></i>
+                    </button>
+                    <div class="user-dropdown-menu" id="user-dropdown-menu">
+                        <div class="user-dropdown-header">
+                            <span class="dropdown-user-title">{{ current_user.username if current_user else '' }}</span>
+                            <span class="dropdown-user-subtitle">{{ 'Administrador del servidor' if current_user and current_user.is_admin else 'Espacio personal aislado' }}</span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        {% if current_user and current_user.is_admin %}
+                        <button type="button" class="user-dropdown-item" id="btn-open-users-modal">
+                            <i data-lucide="users" class="w-4 h-4 text-accent"></i>
+                            <span>Gestión de Usuarios</span>
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        {% endif %}
+                        <button type="button" class="user-dropdown-item text-danger" id="btn-logout">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                            <span>Cerrar Sesión</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -347,16 +379,121 @@
             <i data-lucide="edit-2" class="w-4 h-4"></i>
             <span>Renombrar</span>
         </div>
+        <div class="ctx-item" id="ctx-move-user" style="display: none;">
+            <i data-lucide="folder-symlink" class="w-4 h-4 text-accent"></i>
+            <span>Mover a usuario...</span>
+        </div>
         <div class="ctx-item text-danger" id="ctx-delete">
             <i data-lucide="trash-2" class="w-4 h-4"></i>
             <span>Eliminar</span>
         </div>
     </div>
 
+    <!-- MODAL: GESTIÓN DE USUARIOS (ADMIN) -->
+    <div class="modal-dialog-backdrop modal-large" id="modal-users-backdrop">
+        <div class="modal-dialog-card modal-users-card">
+            <div class="dialog-header">
+                <div class="dialog-title-icon">
+                    <i data-lucide="users" class="w-5 h-5 text-accent"></i>
+                </div>
+                <h3>Gestión de Usuarios</h3>
+                <button class="dialog-close-btn" id="btn-close-users-dialog">&times;</button>
+            </div>
+            <div class="dialog-body">
+                <!-- FORM CREAR USUARIO -->
+                <div class="admin-create-user-section">
+                    <h4 class="section-subtitle">Crear Nuevo Usuario</h4>
+                    <form id="form-admin-create-user" class="admin-user-form">
+                        <div class="admin-form-row">
+                            <div class="form-field flex-1">
+                                <label for="input-admin-username">Nombre de usuario</label>
+                                <input type="text" id="input-admin-username" placeholder="ej: nicolas, usuario-1" autocomplete="off" required>
+                                <small class="form-field-hint">Minúsculas, números, guiones (-), puntos (.) y guiones bajos (_)</small>
+                            </div>
+                            <div class="form-field flex-1">
+                                <label for="input-admin-password">Contraseña</label>
+                                <input type="password" id="input-admin-password" placeholder="Mínimo 4 caracteres" autocomplete="new-password" required>
+                            </div>
+                        </div>
+                        <div class="admin-form-footer-row">
+                            <label class="check-label">
+                                <input type="checkbox" id="check-admin-is-admin">
+                                <span>Conceder permisos de Administrador</span>
+                            </label>
+                            <button type="submit" class="btn btn-primary" id="btn-submit-create-user">
+                                <i data-lucide="user-plus" class="w-4 h-4"></i>
+                                <span>Crear Usuario</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="admin-users-list-section">
+                    <div class="section-header-row">
+                        <h4 class="section-subtitle">Usuarios Registrados</h4>
+                        <span class="user-count-badge" id="admin-user-count">0</span>
+                    </div>
+                    <div class="users-table-container">
+                        <table class="users-table" id="users-table">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Rol</th>
+                                    <th>Estado</th>
+                                    <th>Creado</th>
+                                    <th class="text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <!-- Rendered dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: MOVER A USUARIO (ADMIN) -->
+    <div class="modal-dialog-backdrop" id="modal-move-backdrop">
+        <div class="modal-dialog-card">
+            <div class="dialog-header">
+                <div class="dialog-title-icon">
+                    <i data-lucide="folder-symlink" class="w-5 h-5 text-accent"></i>
+                </div>
+                <h3>Mover a Usuario</h3>
+                <button class="dialog-close-btn" id="btn-close-move-dialog">&times;</button>
+            </div>
+            <div class="dialog-body">
+                <p class="dialog-desc">Elemento a transferir: <code id="dialog-move-source-path">/</code></p>
+                <div class="form-field">
+                    <label for="select-move-target-user">Usuario Destinatario</label>
+                    <select id="select-move-target-user" class="form-select">
+                        <!-- Loaded dynamically -->
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="input-move-dest-subpath">Subcarpeta de destino opcional</label>
+                    <input type="text" id="input-move-dest-subpath" placeholder="Dejar en blanco para la raíz del usuario" autocomplete="off">
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button class="btn btn-secondary" id="btn-cancel-move-dialog">Cancelar</button>
+                <button class="btn btn-primary" id="btn-submit-move-dialog">Mover Elemento</button>
+            </div>
+        </div>
+    </div>
+
     <!-- FLOATING TOAST NOTIFICATIONS -->
     <div class="toast-stack" id="toast-stack"></div>
 
+    <!-- Inject Server-side Current User into Global Window -->
+    <script>
+        window.__CURRENT_USER__ = {{ current_user | tojson if current_user else 'null' }};
+    </script>
+
     <!-- Application Script with Cache Buster -->
-    <script src="/_static/js/app.js?v=2.1.0"></script>
+    <script src="/_static/js/app.js?v=2.2.0"></script>
 </body>
 </html>
+
