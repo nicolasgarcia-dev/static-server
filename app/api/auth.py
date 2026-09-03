@@ -6,8 +6,10 @@ from app.services.db import (
     verify_password,
     create_session,
     get_session_user,
-    delete_session
+    delete_session,
+    update_user_password
 )
+
 
 router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
@@ -123,3 +125,45 @@ async def get_me(current_user: Dict[str, Any] = Depends(get_current_user)):
             "is_admin": current_user["is_admin"]
         }
     }
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+    confirm_password: str
+
+
+@router.post("/change-password")
+async def change_password(
+    payload: ChangePasswordRequest,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Permite al usuario autenticado cambiar su propia contraseña."""
+    if payload.new_password != payload.confirm_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La confirmación de la nueva contraseña no coincide."
+        )
+
+    if len(payload.new_password) < 4:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La nueva contraseña debe tener al menos 4 caracteres."
+        )
+
+    # Verify current password
+    user_check = verify_password(current_user["username"], payload.current_password)
+    if not user_check:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La contraseña actual no es correcta."
+        )
+
+    try:
+        update_user_password(current_user["username"], payload.new_password)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+    return {"success": True, "message": "Contraseña cambiada con éxito."}
+
+

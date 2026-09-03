@@ -20,7 +20,206 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
 
     <!-- Custom Design Stylesheet with Cache Buster -->
-    <link rel="stylesheet" href="/_static/css/styles.css?v=2.1.0">
+    <link rel="stylesheet" href="/_static/css/styles.css?v=3.0.0">
+
+    <!-- Bulletproof High-Priority Styles for Multi-User UI -->
+    <style>
+        .user-profile-menu-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .user-profile-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.04) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 9999px !important;
+            padding: 0.25rem 0.75rem 0.25rem 0.3rem !important;
+            color: #f4f4f5 !important;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .user-profile-btn:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+        }
+
+        .user-name-label {
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: -0.01em;
+        }
+
+        .badge-role {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .badge-admin {
+            background: rgba(59, 130, 246, 0.18) !important;
+            color: #60a5fa !important;
+            border: 1px solid rgba(59, 130, 246, 0.35) !important;
+        }
+
+        .badge-user {
+            background: rgba(255, 255, 255, 0.08) !important;
+            color: #a1a1aa !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        }
+
+        .user-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 240px;
+            background: #141417 !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+            padding: 0.5rem !important;
+            display: none;
+            flex-direction: column;
+            z-index: 9999;
+            backdrop-filter: blur(16px);
+        }
+
+        .user-dropdown-menu.active {
+            display: flex !important;
+        }
+
+        .user-dropdown-header {
+            padding: 0.5rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .dropdown-user-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .dropdown-user-subtitle {
+            font-size: 0.72rem;
+            color: #71717a;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+            margin: 0.35rem 0;
+        }
+
+        .user-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            width: 100%;
+            padding: 0.55rem 0.75rem;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 8px !important;
+            color: #d4d4d8 !important;
+            font-family: inherit;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.15s ease;
+        }
+
+        .user-dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.06) !important;
+            color: #ffffff !important;
+        }
+
+        .user-dropdown-item.text-danger {
+            color: #f87171 !important;
+        }
+
+        .user-dropdown-item.text-danger:hover {
+            background: rgba(239, 68, 68, 0.12) !important;
+            color: #fca5a5 !important;
+        }
+
+        .btn-danger-soft {
+            background: rgba(239, 68, 68, 0.1) !important;
+            border: 1px solid rgba(239, 68, 68, 0.25) !important;
+            color: #f87171 !important;
+        }
+
+        .btn-danger-soft:hover {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: rgba(239, 68, 68, 0.45) !important;
+            color: #fca5a5 !important;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.25) !important;
+        }
+
+        /* Guaranteed Modal Overlay & Card Styles */
+        .modal-dialog-backdrop {
+            position: fixed !important;
+            inset: 0 !important;
+            background: rgba(0, 0, 0, 0.75) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+            display: none !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 1rem !important;
+            z-index: 99999 !important;
+        }
+
+        .modal-dialog-backdrop.active {
+            display: flex !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+
+        .modal-dialog-card {
+            width: 100% !important;
+            max-width: 440px !important;
+            background: #141417 !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow: hidden !important;
+        }
+
+        .modal-dialog-card.modal-users-card {
+            max-width: 760px !important;
+        }
+    </style>
+
 </head>
 <body>
     <div class="app-container">
@@ -69,6 +268,13 @@
                     <span class="btn-label">Subir HTML</span>
                 </button>
 
+                {% if current_user and current_user.is_admin %}
+                <button class="btn btn-secondary" id="btn-topbar-admin-users" title="Gestión de Usuarios">
+                    <i data-lucide="users" class="w-4 h-4 text-accent"></i>
+                    <span class="btn-label">Usuarios</span>
+                </button>
+                {% endif %}
+
                 <!-- USER PROFILE BADGE & DROPDOWN -->
                 <div class="user-profile-menu-wrap">
                     <button class="user-profile-btn" id="btn-user-profile" aria-haspopup="true" aria-expanded="false" title="Cuenta de usuario">
@@ -94,14 +300,28 @@
                         </button>
                         <div class="dropdown-divider"></div>
                         {% endif %}
+                        <button type="button" class="user-dropdown-item" id="btn-open-change-password-modal" onclick="window.openChangePasswordModal && window.openChangePasswordModal(event)">
+                            <i data-lucide="key" class="w-4 h-4 text-accent"></i>
+                            <span>Cambiar mi Contraseña</span>
+                        </button>
+
+                        <div class="dropdown-divider"></div>
                         <button type="button" class="user-dropdown-item text-danger" id="btn-logout">
                             <i data-lucide="log-out" class="w-4 h-4"></i>
                             <span>Cerrar Sesión</span>
                         </button>
                     </div>
                 </div>
+
+
+                <!-- DIRECT LOGOUT BUTTON -->
+                <button class="btn btn-danger-soft" id="btn-topbar-logout" title="Cerrar Sesión">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span class="btn-label">Salir</span>
+                </button>
             </div>
         </header>
+
 
         <!-- MAIN LAYOUT -->
         <div class="app-main-layout">
@@ -484,6 +704,69 @@
         </div>
     </div>
 
+    <!-- MODAL: CAMBIAR CONTRASEÑA (CUALQUIER USUARIO) -->
+    <div class="modal-dialog-backdrop" id="modal-change-password-backdrop">
+        <div class="modal-dialog-card">
+            <div class="dialog-header">
+                <div class="dialog-title-icon">
+                    <i data-lucide="key" class="w-5 h-5 text-accent"></i>
+                </div>
+                <h3>Cambiar mi Contraseña</h3>
+                <button class="dialog-close-btn" id="btn-close-change-pwd-dialog">&times;</button>
+            </div>
+            <form id="form-change-password">
+                <div class="dialog-body">
+                    <div class="form-field">
+                        <label for="input-curr-password">Contraseña actual</label>
+                        <input type="password" id="input-curr-password" placeholder="Tu contraseña actual" autocomplete="current-password" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="input-new-password">Nueva contraseña</label>
+                        <input type="password" id="input-new-password" placeholder="Mínimo 4 caracteres" autocomplete="new-password" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="input-confirm-password">Confirmar nueva contraseña</label>
+                        <input type="password" id="input-confirm-password" placeholder="Repite la nueva contraseña" autocomplete="new-password" required>
+                    </div>
+                </div>
+                <div class="dialog-footer">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-change-pwd-dialog">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btn-submit-change-pwd-dialog">Actualizar Contraseña</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADMIN RESET CONTRASEÑA -->
+    <div class="modal-dialog-backdrop" id="modal-admin-reset-pwd-backdrop">
+        <div class="modal-dialog-card">
+            <div class="dialog-header">
+                <div class="dialog-title-icon">
+                    <i data-lucide="key-round" class="w-5 h-5 text-accent"></i>
+                </div>
+                <h3>Establecer Nueva Contraseña</h3>
+                <button class="dialog-close-btn" id="btn-close-admin-reset-dialog">&times;</button>
+            </div>
+            <form id="form-admin-reset-password">
+                <div class="dialog-body">
+                    <p class="dialog-desc">Usuario: <strong id="dialog-reset-pwd-username">usuario</strong></p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        Introduce la nueva clave para este usuario. Se aplicará de inmediato sin necesidad de conocer su clave anterior.
+                    </p>
+                    <div class="form-field">
+                        <label for="input-admin-new-user-pwd">Nueva contraseña</label>
+                        <input type="password" id="input-admin-new-user-pwd" placeholder="Mínimo 4 caracteres" autocomplete="new-password" required>
+                    </div>
+                </div>
+                <div class="dialog-footer">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-admin-reset-dialog">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btn-submit-admin-reset-dialog">Guardar Clave</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <!-- FLOATING TOAST NOTIFICATIONS -->
     <div class="toast-stack" id="toast-stack"></div>
 
@@ -493,7 +776,9 @@
     </script>
 
     <!-- Application Script with Cache Buster -->
-    <script src="/_static/js/app.js?v=2.2.0"></script>
+    <script src="/_static/js/app.js?v=3.2.0"></script>
 </body>
 </html>
+
+
 

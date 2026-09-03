@@ -67,8 +67,11 @@ app.include_router(admin_router)
 app.include_router(explorer_router)
 
 
-def render_dashboard(request: Request, user: dict):
+def render_dashboard(request: Request, user: dict = None):
     """Render the main management dashboard scoped to current user."""
+    if not user:
+        return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
+
     template = jinja_env.get_template("index.html")
     rendered = template.render(
         request=request,
@@ -76,6 +79,7 @@ def render_dashboard(request: Request, user: dict):
         storage_dir_name="html_storage" if user.get("is_admin") else user.get("username", "html_storage")
     )
     return HTMLResponse(content=rendered, status_code=200)
+
 
 
 @app.api_route("/login", methods=["GET", "HEAD"], response_class=HTMLResponse)

@@ -229,7 +229,33 @@ def update_user_status(username: str, is_active: bool) -> Dict[str, Any]:
     }
 
 
+def update_user_password(username: str, new_password: str) -> bool:
+    """Updates the password hash and salt for a user."""
+    clean_user = username.strip().lower()
+    user = get_user(clean_user)
+    if not user:
+        raise ValueError(f"El usuario '{clean_user}' no existe.")
+
+    pwd_hash, salt = hash_password(new_password)
+    now = datetime.now(timezone.utc).isoformat()
+
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            UPDATE users
+            SET password_hash = ?, salt = ?, updated_at = ?
+            WHERE username = ?
+            """,
+            (pwd_hash, salt, now, clean_user)
+        )
+        conn.commit()
+
+    return True
+
+
 def delete_user(username: str) -> bool:
+
     """Delete a user account and associated sessions."""
     clean_user = username.strip().lower()
     user = get_user(clean_user)

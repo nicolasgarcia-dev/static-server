@@ -23,8 +23,7 @@ def setup_and_clean_environment():
         except Exception:
             pass
 
-    # Clean up test directories
-    test_folders = ["TEST_CIM", "testuser", "testadmin", "user_a", "user_b"]
+    test_folders = ["TEST_CIM", "testuser", "testadmin", "user_a", "user_b", "nuevo-empleado", "disabled_user", "admin", "cliadmin"]
     for f in test_folders:
         p = STORAGE_DIR / f
         if p.exists():
@@ -277,9 +276,65 @@ def test_admin_move_item_to_user():
     assert "TEST_CIM" in items
 
 
+def test_user_change_own_password():
+    """Verify that a user can change their own password."""
+    user_client = get_authenticated_client(username="user_a", password="oldpassword123", is_admin=False)
+
+    # 1. Wrong current password fails
+    res_wrong = user_client.post("/api/auth/change-password", json={
+        "current_password": "wrongpassword",
+        "new_password": "newpassword456",
+        "confirm_password": "newpassword456"
+    })
+    assert res_wrong.status_code == 400
+
+    # 2. Mismatched confirm password fails
+    res_mismatch = user_client.post("/api/auth/change-password", json={
+        "current_password": "oldpassword123",
+        "new_password": "newpassword456",
+        "confirm_password": "differentpassword"
+    })
+    assert res_mismatch.status_code == 400
+
+    # 3. Successful password change
+    res_success = user_client.post("/api/auth/change-password", json={
+        "current_password": "oldpassword123",
+        "new_password": "newpassword456",
+        "confirm_password": "newpassword456"
+    })
+    assert res_success.status_code == 200
+
+    # 4. Old password can no longer log in
+    res_login_old = client.post("/api/auth/login", json={"username": "user_a", "password": "oldpassword123"})
+    assert res_login_old.status_code == 401
+
+    # 5. New password logs in successfully
+    res_login_new = client.post("/api/auth/login", json={"username": "user_a", "password": "newpassword456"})
+    assert res_login_new.status_code == 200
+
+
+def test_admin_reset_user_password():
+    """Verify that admin can set a new password for any user."""
+    admin_client = get_authenticated_client(username="testadmin", password="adminpassword", is_admin=True)
+    user_client = get_authenticated_client(username="user_b", password="userbpassword", is_admin=False)
+
+    # Regular user cannot call admin password reset
+    res_forbidden = user_client.post("/api/admin/users/testadmin/password", json={"new_password": "hackedpassword"})
+    assert res_forbidden.status_code == 403
+
+    # Admin resets user_b password
+    res_reset = admin_client.post("/api/admin/users/user_b/password", json={"new_password": "brandnewpassword"})
+    assert res_reset.status_code == 200
+
+    # user_b can log in with brand new password
+    res_login = client.post("/api/auth/login", json={"username": "user_b", "password": "brandnewpassword"})
+    assert res_login.status_code == 200
+
+
 # ==============================================================================
 # SECURITY & XSS TESTS
 # ==============================================================================
+
 
 def test_reflected_xss_in_404_is_escaped():
     """Verify that malicious script tags in URLs are safely escaped in 404 responses."""

@@ -112,6 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
         userDropdownMenu: document.getElementById('user-dropdown-menu'),
         btnOpenUsersModal: document.getElementById('btn-open-users-modal'),
         btnLogout: document.getElementById('btn-logout'),
+        btnTopbarLogout: document.getElementById('btn-topbar-logout'),
+        btnTopbarAdminUsers: document.getElementById('btn-topbar-admin-users'),
+
 
         // Admin User Management Modal
         modalUsersBackdrop: document.getElementById('modal-users-backdrop'),
@@ -130,8 +133,27 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSubmitMoveDialog: document.getElementById('btn-submit-move-dialog'),
         dialogMoveSourcePath: document.getElementById('dialog-move-source-path'),
         selectMoveTargetUser: document.getElementById('select-move-target-user'),
-        inputMoveDestSubpath: document.getElementById('input-move-dest-subpath')
+        inputMoveDestSubpath: document.getElementById('input-move-dest-subpath'),
+
+        // User Change Password Modal
+        btnOpenChangePasswordModal: document.getElementById('btn-open-change-password-modal'),
+        modalChangePasswordBackdrop: document.getElementById('modal-change-password-backdrop'),
+        btnCloseChangePwdDialog: document.getElementById('btn-close-change-pwd-dialog'),
+        btnCancelChangePwdDialog: document.getElementById('btn-cancel-change-pwd-dialog'),
+        formChangePassword: document.getElementById('form-change-password'),
+        inputCurrPassword: document.getElementById('input-curr-password'),
+        inputNewPassword: document.getElementById('input-new-password'),
+        inputConfirmPassword: document.getElementById('input-confirm-password'),
+
+        // Admin Reset Password Modal
+        modalAdminResetPwdBackdrop: document.getElementById('modal-admin-reset-pwd-backdrop'),
+        btnCloseAdminResetDialog: document.getElementById('btn-close-admin-reset-dialog'),
+        btnCancelAdminResetDialog: document.getElementById('btn-cancel-admin-reset-dialog'),
+        formAdminResetPassword: document.getElementById('form-admin-reset-password'),
+        dialogResetPwdUsername: document.getElementById('dialog-reset-pwd-username'),
+        inputAdminNewUserPwd: document.getElementById('input-admin-new-user-pwd')
     };
+
 
     const currentUser = window.__CURRENT_USER__ || null;
 
@@ -946,6 +968,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td style="color: var(--text-muted); font-size: 0.75rem;">${escapeHtml(u.created_at ? u.created_at.split('T')[0] : '-')}</td>
                     <td class="text-right">
                         <div class="table-actions">
+                            <button type="button" class="btn-table-action btn-reset-password-user" data-user="${escapeHtml(u.username)}" title="Establecer nueva contraseña">
+                                Clave
+                            </button>
                             ${!isCurrent ? `
                                 <button type="button" class="btn-table-action btn-toggle-status" data-user="${escapeHtml(u.username)}" data-active="${u.is_active}">
                                     ${u.is_active ? 'Deshabilitar' : 'Habilitar'}
@@ -953,10 +978,22 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <button type="button" class="btn-table-action btn-danger-action btn-delete-user" data-user="${escapeHtml(u.username)}">
                                     Eliminar
                                 </button>
-                            ` : '<span style="font-size: 0.75rem; color: var(--text-muted);">-</span>'}
+                            ` : ''}
                         </div>
                     </td>
                 `;
+
+                const resetBtn = tr.querySelector('.btn-reset-password-user');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', () => {
+                        const targetUser = resetBtn.dataset.user;
+                        state.targetUserForReset = targetUser;
+                        elements.dialogResetPwdUsername.textContent = targetUser;
+                        elements.inputAdminNewUserPwd.value = '';
+                        elements.modalAdminResetPwdBackdrop.classList.add('active');
+                        setTimeout(() => elements.inputAdminNewUserPwd.focus(), 50);
+                    });
+                }
 
                 const toggleBtn = tr.querySelector('.btn-toggle-status');
                 if (toggleBtn) {
@@ -999,6 +1036,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 elements.usersTableBody.appendChild(tr);
+
             });
         } catch (err) {
             showToast(err.message, 'error');
@@ -1180,11 +1218,14 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.previewDrawerBackdrop.classList.remove('active');
             if (elements.modalUsersBackdrop) elements.modalUsersBackdrop.classList.remove('active');
             if (elements.modalMoveBackdrop) elements.modalMoveBackdrop.classList.remove('active');
+            if (elements.modalChangePasswordBackdrop) elements.modalChangePasswordBackdrop.classList.remove('active');
+            if (elements.modalAdminResetPwdBackdrop) elements.modalAdminResetPwdBackdrop.classList.remove('active');
             closeMobileSidebar();
             closeCommandPalette();
             hideContextMenu();
             return;
         }
+
 
         if (!isTyping) {
             if (e.key === '/') {
@@ -1219,15 +1260,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    async function doLogout() {
+        try {
+            await authFetch('/api/auth/logout', { method: 'POST' });
+        } catch(e) {}
+        localStorage.removeItem('html_server_token');
+        localStorage.removeItem('html_server_user');
+        window.location.href = '/login';
+    }
+
     if (elements.btnLogout) {
-        elements.btnLogout.addEventListener('click', async () => {
-            try {
-                await authFetch('/api/auth/logout', { method: 'POST' });
-            } catch(e) {}
-            localStorage.removeItem('html_server_token');
-            localStorage.removeItem('html_server_user');
-            window.location.href = '/login';
-        });
+        elements.btnLogout.addEventListener('click', doLogout);
+    }
+    if (elements.btnTopbarLogout) {
+        elements.btnTopbarLogout.addEventListener('click', doLogout);
+    }
+
+    if (elements.btnTopbarAdminUsers) {
+        elements.btnTopbarAdminUsers.addEventListener('click', openUsersModal);
     }
 
     // Admin Users Modal Listeners
@@ -1237,6 +1287,7 @@ document.addEventListener('DOMContentLoaded', () => {
             openUsersModal();
         });
     }
+
 
     if (elements.btnCloseUsersDialog) {
         elements.btnCloseUsersDialog.addEventListener('click', () => {
@@ -1288,6 +1339,148 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.btnSubmitMoveDialog) {
         elements.btnSubmitMoveDialog.addEventListener('click', submitMoveDialog);
     }
+
+    // User Change Password Modal Functions
+    function openChangePasswordDialog(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        if (elements.userDropdownMenu) elements.userDropdownMenu.classList.remove('active');
+        if (elements.formChangePassword) elements.formChangePassword.reset();
+        if (elements.modalChangePasswordBackdrop) {
+            elements.modalChangePasswordBackdrop.classList.add('active');
+            elements.modalChangePasswordBackdrop.style.display = 'flex';
+            setTimeout(() => elements.inputCurrPassword && elements.inputCurrPassword.focus(), 50);
+        }
+    }
+    window.openChangePasswordModal = openChangePasswordDialog;
+
+    function closeChangePasswordDialog() {
+        if (elements.modalChangePasswordBackdrop) {
+            elements.modalChangePasswordBackdrop.classList.remove('active');
+            elements.modalChangePasswordBackdrop.style.display = 'none';
+        }
+    }
+    window.closeChangePasswordModal = closeChangePasswordDialog;
+
+    if (elements.btnOpenChangePasswordModal) {
+        elements.btnOpenChangePasswordModal.addEventListener('click', openChangePasswordDialog);
+    }
+    if (elements.btnCloseChangePwdDialog) {
+        elements.btnCloseChangePwdDialog.addEventListener('click', closeChangePasswordDialog);
+    }
+    if (elements.btnCancelChangePwdDialog) {
+        elements.btnCancelChangePwdDialog.addEventListener('click', closeChangePasswordDialog);
+    }
+    if (elements.modalChangePasswordBackdrop) {
+        elements.modalChangePasswordBackdrop.addEventListener('click', (e) => {
+            if (e.target === elements.modalChangePasswordBackdrop) {
+                closeChangePasswordDialog();
+            }
+        });
+    }
+
+    if (elements.formChangePassword) {
+        elements.formChangePassword.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const current_password = elements.inputCurrPassword.value;
+            const new_password = elements.inputNewPassword.value;
+            const confirm_password = elements.inputConfirmPassword.value;
+
+            if (new_password !== confirm_password) {
+                showToast('La nueva contraseña y su confirmación no coinciden', 'error');
+                return;
+            }
+            if (new_password.length < 4) {
+                showToast('La contraseña debe tener al menos 4 caracteres', 'error');
+                return;
+            }
+
+            try {
+                const res = await authFetch('/api/auth/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ current_password, new_password, confirm_password })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Error al cambiar contraseña');
+
+                showToast(data.message || 'Contraseña actualizada con éxito', 'success');
+                elements.formChangePassword.reset();
+                closeChangePasswordDialog();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        });
+    }
+
+    // Admin Reset Password Modal Functions
+    function openAdminResetPasswordDialog(targetUser) {
+        state.targetUserForReset = targetUser;
+        if (elements.dialogResetPwdUsername) elements.dialogResetPwdUsername.textContent = targetUser;
+        if (elements.inputAdminNewUserPwd) elements.inputAdminNewUserPwd.value = '';
+        if (elements.modalAdminResetPwdBackdrop) {
+            elements.modalAdminResetPwdBackdrop.classList.add('active');
+            elements.modalAdminResetPwdBackdrop.style.display = 'flex';
+            setTimeout(() => elements.inputAdminNewUserPwd && elements.inputAdminNewUserPwd.focus(), 50);
+        }
+    }
+    window.openAdminResetPasswordModal = openAdminResetPasswordDialog;
+
+    function closeAdminResetPasswordDialog() {
+        if (elements.modalAdminResetPwdBackdrop) {
+            elements.modalAdminResetPwdBackdrop.classList.remove('active');
+            elements.modalAdminResetPwdBackdrop.style.display = 'none';
+        }
+    }
+    window.closeAdminResetPasswordModal = closeAdminResetPasswordDialog;
+
+    if (elements.btnCloseAdminResetDialog) {
+        elements.btnCloseAdminResetDialog.addEventListener('click', closeAdminResetPasswordDialog);
+    }
+    if (elements.btnCancelAdminResetDialog) {
+        elements.btnCancelAdminResetDialog.addEventListener('click', closeAdminResetPasswordDialog);
+    }
+    if (elements.modalAdminResetPwdBackdrop) {
+        elements.modalAdminResetPwdBackdrop.addEventListener('click', (e) => {
+            if (e.target === elements.modalAdminResetPwdBackdrop) {
+                closeAdminResetPasswordDialog();
+            }
+        });
+    }
+
+    if (elements.formAdminResetPassword) {
+        elements.formAdminResetPassword.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const targetUser = state.targetUserForReset;
+            const new_password = elements.inputAdminNewUserPwd.value;
+
+            if (!targetUser) return;
+            if (new_password.length < 4) {
+                showToast('La contraseña debe tener al menos 4 caracteres', 'error');
+                return;
+            }
+
+            try {
+                const res = await authFetch(`/api/admin/users/${encodeURIComponent(targetUser)}/password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ new_password })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Error al restablecer contraseña');
+
+                showToast(data.message || 'Contraseña restablecida con éxito', 'success');
+                elements.formAdminResetPassword.reset();
+                closeAdminResetPasswordDialog();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        });
+    }
+
+
 
 
     // Init

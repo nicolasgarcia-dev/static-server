@@ -8,8 +8,10 @@ from app.services.db import (
     get_user,
     list_users,
     update_user_status,
+    update_user_password,
     delete_user
 )
+
 from app.services.storage import StorageService
 from app.config import STORAGE_DIR
 
@@ -110,9 +112,41 @@ async def admin_delete_user(username: str, admin: Dict[str, Any] = Depends(requi
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
+class AdminResetPasswordRequest(BaseModel):
+
+    new_password: str
+
+
+@router.post("/users/{username}/password")
+async def admin_reset_password(
+    username: str,
+    req: AdminResetPasswordRequest,
+    admin: Dict[str, Any] = Depends(require_admin)
+):
+    """Permite al administrador restablecer la contraseña de cualquier usuario."""
+    clean_user = username.strip().lower()
+    if len(req.new_password) < 4:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La nueva contraseña debe tener al menos 4 caracteres."
+        )
+
+    try:
+        update_user_password(clean_user, req.new_password)
+        return {
+            "success": True,
+            "message": f"Contraseña actualizada correctamente para el usuario '{clean_user}'."
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+
 @router.post("/move-item")
 async def admin_move_item(req: MoveItemRequest, admin: Dict[str, Any] = Depends(require_admin)):
     """Mover carpetas o archivos existentes a la carpeta de un usuario determinado."""
+
     target_user = get_user(req.target_username)
     if not target_user:
         raise HTTPException(
